@@ -4,6 +4,7 @@ import os
 # Import the framework
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
+from src.controller import Controller
 
 # Create an instance of Flask
 app = Flask(__name__)
@@ -29,4 +30,11 @@ class Playlists(Resource):
         return {'message': 'Success', 'data': 'null'}, 200
 
 
+class UpdateYoutubeDl(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.update_youtube_dl()}, 200
+
+
 api.add_resource(Playlists, '/playlists')
+api.add_resource(UpdateYoutubeDl, '/update-youtube-dl')

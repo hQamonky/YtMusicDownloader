@@ -19,6 +19,7 @@ Manage, through this API, a daemon that automatically downloads music from YouTu
 ### Playlists
 `/playlists`
 GET 
+POST
 `/playlist/<id>`
 GET 
 POST
