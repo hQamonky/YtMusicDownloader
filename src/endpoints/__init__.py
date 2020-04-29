@@ -36,5 +36,12 @@ class UpdateYoutubeDl(Resource):
         return {'message': 'Success', 'data': Controller.update_youtube_dl()}, 200
 
 
+class TestingYoutubeDl(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.list_playlist()}, 200
+
+
 api.add_resource(Playlists, '/playlists')
 api.add_resource(UpdateYoutubeDl, '/update-youtube-dl')
+api.add_resource(TestingYoutubeDl, '/testing')
