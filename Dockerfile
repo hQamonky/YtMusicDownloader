@@ -1,4 +1,8 @@
-FROM python:3
+FROM alpine:latest
+
+RUN apk add --no-cache python3-dev \
+    && pip3 install --upgrade pip
+RUN apk add  --no-cache ffmpeg
 
 WORKDIR /usr/src/app
 
@@ -8,4 +12,4 @@ RUN pip install --upgrade youtube-dl
 
 COPY . .
 
-CMD [ "python", "./run.py" ]
+CMD [ "python3", "./run.py" ]
