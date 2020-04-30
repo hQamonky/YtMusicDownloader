@@ -51,13 +51,10 @@ class YoutubeDl:
 
     @staticmethod
     def download_music(url, output):
-        process = subprocess.run(["youtube-dl", "-ciw",
-                                  "-x",
-                                  "--audio-format", "mp3",
+        process = subprocess.run(["sudo", "youtube-dl", "-ciw",
+                                  "-x", "--audio-format", "mp3",
                                   "--write-thumbnail",
-                                  "--mark-watched",
-                                  # "-o", output,
+                                  "-o", output,
                                   url],
                                  check=True, stdout=subprocess.PIPE, universal_newlines=True)
-        return process.stderr
-# youtube-dl -ciw -x --audio-format "mp3" --write-thumbnail --mark-watched https://www.youtube.com/watch?v=2UcPJYZ_Ta0
+        return process.stdout

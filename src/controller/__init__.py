@@ -22,5 +22,5 @@ class Controller:
     @staticmethod
     def download_music(video_id):
         video_id = "2UcPJYZ_Ta0"
-        result = YoutubeDl.download_music(YoutubeDl.video_url() + video_id, "/.%(ext)s")
+        result = YoutubeDl.download_music(YoutubeDl.video_url() + video_id, "./" + video_id + ".webm")
         return result
