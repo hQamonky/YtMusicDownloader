@@ -2,18 +2,19 @@
 Manage, through this API, a daemon that automatically downloads music from YouTube playlists.
 ## Features
 - Handle multiple playlists :
-    - Add/Edit/Remove playlists
-    - Set playlist download folder
+    - Add/Remove playlists
+    - Edit playlist download folder
     - Trigger playlist download
 - Set time/occurrence of automatic download
 - Handle newly downloaded music :
     - See list of downloaded music "not seen yet"
-    - Rename music title and artiste manually
+    - Rename music title and artist manually
     - Set new music to "seen"
-- Handle naming rule :
-    - Add/Edit/Delete rule
-    - Strings to delete or replace (ex: delete "[Official Music Video]" from title)
-    - Set rule condition on channel
+- Handle title and artist naming :
+    - Add/Edit/Delete rules
+    - Strings replace (ex: replace " [Official Music Video]" by "")
+    - Set title/artist format to apply depending on channel on channel
+    - Set title/artist default format to apply
 ## Usage
 All requests will have the `Application/json` header.  
 All `POST` and `DELETE` requests will take a `json` as a body.  
@@ -66,47 +67,10 @@ Subsequent response definitions will only detail the expected value of the `data
 }
 ```
 ## `/playlist/<id>`
-### `GET`  
-*Response*  
-- `404 Not found` if playlist does not exist
-- `200 OK` on success  
-```json
-[
-    {
-        "_type": "playlist", 
-        "entries": [
-            {
-                "_type": "url", 
-                "url": "ftshNCG_RPk", 
-                "ie_key": "Youtube", 
-                "id": "ftshNCG_RPk", 
-                "title": "Bad Computer - Riddle [Monstercat Release]"
-            }, {
-                "_type": "url",
-                "url": "5S5zfXao-h0", 
-                "ie_key": "Youtube", 
-                "id": "5S5zfXao-h0", 
-                "title": "Netrum - Colorblind (feat. Halvorsen) [NCS Release]"
-            }
-        ], 
-        "id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT", 
-        "title": "Best of Willy tracks 2020 part 2", 
-        "uploader": "William Herlicq", 
-        "uploader_id": "UCT8Y-bugDyR4ADHoQ-FOluw", 
-        "uploader_url": "https://www.youtube.com/channel/UCT8Y-bugDyR4ADHoQ-FOluw", 
-        "extractor": "youtube:playlist", 
-        "webpage_url": "https://www.youtube.com/playlist?list=PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT", 
-        "webpage_url_basename": "playlist", 
-        "extractor_key": "YoutubePlaylist",
-        "folder": "/home/qmk/Music/Best of WillyTracks"
-    }
-]
-```
 ### `POST`  
 *Body*  
 ```json
 {
-    "id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
     "folder": "/home/qmk/Music/Best of WillyTracks"
 }
 ```
@@ -187,17 +151,17 @@ Returns list of "not seen" music.
         "id": "ftshNCG_RPk",
         "file_name": "Bad Computer - Riddle [Monstercat Release]",
         "title": "Riddle",
-        "artiste": "Bad Computer",
+        "artist": "Bad Computer",
         "channel": "Monstercat: Uncaged",
         "upload_date": "13/04/2020",
-        "folder": "/home/qmk/Music/Best of WillyTracks/",
+        "folders": ["/home/qmk/Music/Best of WillyTracks/"],
         "new": "true"
     },
     {
         "id": "5S5zfXao-h0",
         "file_name": "Netrum - Colorblind (feat. Halvorsen) [NCS Release]",
         "title": "Colorblind (feat. Halvorsen)",
-        "artiste": "Netrum",
+        "artist": "Netrum",
         "channel": "NoCopyrightSounds",
         "upload_date": "14/04/2020",
         "folder": "/home/qmk/Music/Best of WillyTracks/",
@@ -213,7 +177,7 @@ Returns list of "not seen" music.
 ```json
 {
     "title": "Riddle",
-    "artiste": "Bad Computer",
+    "artist": "Bad Computer",
     "new": "false"
 }
 ```
@@ -243,21 +207,18 @@ Returns list of rules.
         "id": "0",
         "replace": "‒",
         "replace_by": "-",
-        "channel": "all",
         "priority": "1"
     },
     {
         "id": "1",
         "replace": "u00e9",
         "replace_by": "é",
-        "channel": "all",
         "priority": "2"
     },
     {
         "id": "2",
         "replace": " [Monstercat Release]",
         "replace_by": "",
-        "channel": "Monstercat: Uncaged",
         "priority": "2"
     }
 ]
@@ -267,13 +228,11 @@ Returns list of rules.
 - List of rules with the following parameters :
     - `replace` *(string to replace)*.
     - `replace_by` *(new string that replaces old)*.
-    - `channel` *(rule applies only if video comes from specified YT channel. Setting parameter to "all" will apply rule regardless of the channel)*.
     - `priority` *(in what order should the rules apply relatively to other rules, lowest number will apply first. Naming rules occur before naming format.)*
 ```json
 {
     "replace": "‒",
     "replace_by": "-",
-    "channel": "all",
     "priority": "1"
 }
 ```
@@ -284,7 +243,6 @@ Returns list of rules.
     "id": "0",
     "replace": "‒",
     "replace_by": "-",
-    "channel": "all",
     "priority": "1"
 }
 ```
@@ -297,7 +255,6 @@ Returns list of rules.
 {
     "replace": "‒",
     "replace_by": "-",
-    "channel": "all",
     "priority": "1"
 }
 ```
@@ -307,7 +264,6 @@ Returns list of rules.
 {
     "replace": "‒",
     "replace_by": "-",
-    "channel": "all",
     "priority": "1"
 }
 ```
@@ -317,33 +273,30 @@ Returns list of rules.
 {
     "replace": "‒",
     "replace_by": "-",
-    "channel": "all",
     "priority": "1"
 }
 ```
 ### `DELETE`
 *Response*  
-- `404 Not found` if playlist does not exist
+- `404 Not found` if rule does not exist
 - `200 OK` on success 
 
-## `/naming-formats`
+## `/channels`
 ### `GET`  
 *Response*  
 - `200 OK` on success  
-Returns list of format rules.  
+Returns list of format channels with title/artist renaming format rules.  
 ```json
 [
     {
-        "id": "0",
+        "channel": "Monstercat: Uncaged",
         "separator": " - ",
-        "artiste_before_title": "true",
-        "channel": "default"
+        "artiste_before_title": "true"
     },
     {
-        "id": "1",
+        "channel": "Pegboard Nerds",
         "separator": " - ",
-        "artiste_before_title": "false",
-        "channel": "Pegboard Nerds"
+        "artiste_before_title": "false"
     }
 ]
 ```
@@ -356,18 +309,16 @@ Returns list of format rules.
 ```json
 {
     "separator": " - ",
-    "artiste_before_title": "true",
-    "channel": "default"
+    "artiste_before_title": "true"
 }
 ```
 *Response*  
 - `201 Created` on success  
 ```json
 {
-    "id": "0",
+    "channel": "Monstercat: Uncaged",
     "separator": " - ",
-    "artiste_before_title": "true",
-    "channel": "default"
+    "artiste_before_title": "true"
 }
 ```
 
@@ -377,9 +328,9 @@ Returns list of format rules.
 - `200 OK` on success  
 ```json
 {
+    "channel": "Monstercat: Uncaged",
     "separator": " - ",
-    "artiste_before_title": "true",
-    "channel": "default"
+    "artiste_before_title": "true"
 }
 ```
 ### `POST`
@@ -387,20 +338,19 @@ Returns list of format rules.
 ```json
 {
     "separator": " - ",
-    "artiste_before_title": "true",
-    "channel": "default"
+    "artiste_before_title": "true"
 }
 ```
 *Response*  
 - `201 Updated` on success  
 ```json
 {
+    "channel": "Monstercat: Uncaged",
     "separator": " - ",
-    "artiste_before_title": "true",
-    "channel": "default"
+    "artiste_before_title": "true"
 }
 ```
 ### `DELETE`
 *Response*  
-- `404 Not found` if playlist does not exist
+- `404 Not found` if channel does not exist
 - `200 OK` on success 

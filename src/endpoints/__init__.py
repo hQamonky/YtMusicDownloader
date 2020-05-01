@@ -40,9 +40,32 @@ def index():
 
 
 class Playlists(Resource):
-    @staticmethod
-    def get():
-        return {'message': 'Success', 'data': 'null'}, 200
+    def get(self):
+        shelf = get_db()
+        keys = list(shelf.keys())
+
+        devices = []
+
+        for key in keys:
+            devices.append(shelf[key])
+
+        return {'message': 'Success', 'data': devices}, 200
+
+    def post(self):
+        parser = reqparse.RequestParser()
+
+        parser.add_argument('identifier', required=True)
+        parser.add_argument('name', required=True)
+        parser.add_argument('device_type', required=True)
+        parser.add_argument('controller_gateway', required=True)
+
+        # Parse the arguments into an object
+        args = parser.parse_args()
+
+        shelf = get_db()
+        shelf[args['identifier']] = args
+
+        return {'message': 'Device registered', 'data': args}, 201
 
 
 class UpdateYoutubeDl(Resource):
