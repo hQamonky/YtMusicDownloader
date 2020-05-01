@@ -1,8 +1,9 @@
 import markdown
 import os
+import shelve
 
 # Import the framework
-from flask import Flask
+from flask import Flask, g
 from flask_restful import Resource, Api, reqparse
 from src.controller import Controller
 
@@ -10,6 +11,20 @@ from src.controller import Controller
 app = Flask(__name__)
 # Create the API
 api = Api(app)
+
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = shelve.open("ytdl.db")
+    return db
+
+
+@app.teardown_appcontext
+def teardown_db(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 
 # Route shows the README file.
@@ -39,7 +54,7 @@ class UpdateYoutubeDl(Resource):
 class TestingYoutubeDl(Resource):
     @staticmethod
     def get():
-        return {'message': 'Success', 'data': Controller.download_music("")}, 200
+        return {'message': 'Success', 'data': Controller.list_playlist("PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT")}, 200
 
 
 api.add_resource(Playlists, '/playlists')

@@ -35,7 +35,7 @@ class YoutubeDl:
 
     @staticmethod
     def list_playlist(url):
-        process = subprocess.run(["youtube-dl", "-ciw", "--flat-playlist", "-J", url],
+        process = subprocess.run(["youtube-dl", "-ci", "--flat-playlist", "-J", url],
                                  check=True, stdout=subprocess.PIPE, universal_newlines=True)
         json_string = '[' + process.stdout[:-1] + ']'
         js = json.loads(json_string)
@@ -43,7 +43,7 @@ class YoutubeDl:
 
     @staticmethod
     def get_video_info(url):
-        process = subprocess.run(["youtube-dl", "-ciw", "-J", url],
+        process = subprocess.run(["youtube-dl", "-ci", "-J", url],
                                  check=True, stdout=subprocess.PIPE, universal_newlines=True)
         json_string = process.stdout[:-1]
         js = json.loads(json_string)
@@ -51,7 +51,7 @@ class YoutubeDl:
 
     @staticmethod
     def download_music(url, output):
-        process = subprocess.run(["sudo", "youtube-dl", "-ciw",
+        process = subprocess.run(["sudo", "youtube-dl", "-ci",
                                   "-x", "--audio-format", "mp3",
                                   "--write-thumbnail",
                                   "-o", output,
