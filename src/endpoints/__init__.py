@@ -83,6 +83,12 @@ class Playlist(Resource):
         return {'message': 'Playlist has been removed.', 'data': Controller.delete_playlist(identifier)}, 200
 
 
+class DownloadPlaylist(Resource):
+    @staticmethod
+    def post(playlist_id):
+        return {'message': 'Success', 'data': Controller.download_playlist(playlist_id)}, 201
+
+
 # Naming Rules ---------------------------------------------------------------------------------------------------------
 
 
@@ -162,6 +168,7 @@ api.add_resource(Init, '/initiate')
 # Playlists
 api.add_resource(Playlists, '/playlists')
 api.add_resource(Playlist, '/playlist/<identifier>')
+api.add_resource(DownloadPlaylist, '/playlist/<playlist_id>/download')
 # Naming Rules
 api.add_resource(NamingRules, '/naming-rules')
 api.add_resource(NamingRule, '/naming-rule/<identifier>')

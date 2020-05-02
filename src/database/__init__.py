@@ -97,9 +97,12 @@ class Database:
         return "Playlist removed"
 
     @staticmethod
-    def get_playlist_music(id_playlist):
-        music = Database.get(PlaylistMusic.select_playlist(id_playlist))
-        return music
+    def is_new_music_in_playlist(id_playlist, id_music):
+        count = Database.get(PlaylistMusic.count_playlist_music(id_playlist, id_music))[0]['COUNT(*)']
+        if count == 0:
+            return True
+        else:
+            return False
 
     # Naming Rules -----------------------------------------------------------------------------------------------------
 
@@ -250,7 +253,7 @@ class Music:
 class PlaylistMusic:
     @staticmethod
     def create():
-        return "CREATE TABLE Playlist_Music (id INT PRIMARY KEY, id_playlist text, id_music text)"
+        return "CREATE TABLE Playlist_Music (id INTEGER PRIMARY KEY AUTOINCREMENT, id_playlist text, id_music text)"
 
     @staticmethod
     def drop():
@@ -258,15 +261,20 @@ class PlaylistMusic:
 
     @staticmethod
     def select_playlist(id_playlist):
-        return "SELECT * FROM Playlist_Music WHERE new = '" + id_playlist + "'"
+        return "SELECT * FROM Playlist_Music WHERE id_playlist = '" + id_playlist + "'"
 
     @staticmethod
     def select_music(id_music):
         return "SELECT * FROM Playlist_Music WHERE id_music = '" + id_music + "'"
 
     @staticmethod
+    def count_playlist_music(id_playlist, id_music):
+        return "SELECT COUNT(*) FROM Playlist_Music " \
+               "WHERE id_playlist = '" + id_playlist + "' AND id_music = '" + id_music + "'"
+
+    @staticmethod
     def insert(id_playlist, id_music):
-        return "INSERT INTO Playlist_Music VALUES ('" \
+        return "INSERT INTO Playlist_Music (id_playlist, id_music) VALUES ('" \
                + id_playlist + "','" \
                + id_music + "')"
 

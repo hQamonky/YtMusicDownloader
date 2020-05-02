@@ -45,6 +45,51 @@ class Controller:
         Database.delete_playlist(identifier)
         return "OK"
 
+    @staticmethod
+    def download_playlist(playlist_id):
+        # Update youtube-dl
+        YoutubeDl.update()
+        # Get playlist info from youtube
+        print("yt_playlist : ")
+        yt_playlist = YoutubeDl.list_playlist(YoutubeDl.playlist_url() + playlist_id)
+        print(yt_playlist)
+        # Get playlist info from database (not created yet)
+        print("db_playlist : ")
+        db_playlist = Database.get_playlist(playlist_id)
+        print(db_playlist)
+        # Get list of naming rules from database
+        naming_rules = Database.get_naming_rules()
+        # For each video in youtube playlist
+        for video in yt_playlist['entries']:
+            print('for video :')
+            print(video)
+            # if video is in playlist database
+            if Database.is_new_music_in_playlist(playlist_id, video['id']):
+                print('New music in this playlist...')
+                # Get video info from youtube
+                yt_video_info = YoutubeDl.get_video_info(YoutubeDl.video_url() + video['id'])
+                # Download it
+                YoutubeDl.download_music(YoutubeDl.video_url() + video['id'], "./" + video['id'] + ".webm")
+                # Apply naming rules
+                print(naming_rules)
+                # for naming_rule in naming_rules:
+
+                # Get channel info from database
+                # if channel not found :
+                # Get default naming format from configuration file
+                # Insert channel entry in database with default naming format
+                # end if
+                # Set title, artist, thumbnail, date and comment to downloaded file
+                # Delete downloaded thumbnail
+                # Set permissions to downloaded file
+                # Move file to output playlist folder
+                # Insert Music in database
+                # Add entry to Playlist_Music table
+            else:
+                print('Music already downloaded -> skip')
+
+        return playlist_id + " downloaded"
+
     # Naming Rules -----------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -114,36 +159,6 @@ class Controller:
         return "OK"
 
     # IN PROGRESS ------------------------------------------------------------------------------------------------------
-
-    @staticmethod
-    def download_playlist(playlist_id):
-        # Update youtube-dl
-        YoutubeDl.update()
-        # Get playlist info from youtube
-        yt_playlist = YoutubeDl.list_playlist(YoutubeDl.playlist_url() + playlist_id)
-        # Get playlist info from database (not created yet)
-        db_playlist = Database.get_playlist(playlist_id)
-        db_music = Database.get_playlist_music(playlist_id)
-        # for each video in youtube playlist :
-        # if video is not in database :
-        # Get video info from youtube
-        # Download it
-        # Get list of naming rules from database
-        # Apply naming rules
-        # Get channel info from database
-        # if channel not found :
-        # Get default naming format from configuration file
-        # Insert channel entry in database with default naming format
-        # end if
-        # Set title, artist, thumbnail, date and comment to downloaded file
-        # Delete downloaded thumbnail
-        # Set permissions to downloaded file
-        # Move file to output playlist folder
-        # Insert Music in database
-        # end if
-        # end for
-
-        return
 
     # Youtube-dl methods
     @staticmethod
