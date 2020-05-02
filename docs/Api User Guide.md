@@ -319,7 +319,7 @@ Returns list of format channels with title/artist renaming format rules.
 }
 ```
 
-## `/naming-format/<id>`
+## `/channel/<id>`
 ### `GET`  
 *Response*  
 - `200 OK` on success  

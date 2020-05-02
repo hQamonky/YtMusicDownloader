@@ -62,6 +62,8 @@ class Database:
             d[col[0]] = row[idx]
         return d
 
+    # Playlists --------------------------------------------------------------------------------------------------------
+
     @staticmethod
     def get_playlists():
         playlists = Database.get(Playlists.select_all())
@@ -98,6 +100,34 @@ class Database:
     def get_playlist_music(id_playlist):
         music = Database.get(PlaylistMusic.select_playlist(id_playlist))
         return music
+
+    # Naming Rules -----------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_naming_rules():
+        rules = Database.get(NamingRules.select_all())
+        return rules
+
+    @staticmethod
+    def new_naming_rule(replace, replace_by, priority):
+        Database.edit(NamingRules.insert(replace, replace_by, priority))
+        identifier = Database.get(NamingRules.get_id_of_last_entry())
+        return identifier[0]['id']
+
+    @staticmethod
+    def get_naming_rule(id_rule):
+        rule = Database.get(NamingRules.select(id_rule))
+        return rule[0]
+
+    @staticmethod
+    def update_naming_rule(identifier, replace, replace_by, priority):
+        Database.edit(NamingRules.update(identifier, replace, replace_by, priority))
+        return "Naming Rule updated"
+
+    @staticmethod
+    def delete_naming_rule(identifier):
+        Database.edit(NamingRules.delete(identifier))
+        return "Naming Rule removed"
 
     @staticmethod
     def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
@@ -276,7 +306,8 @@ class DownloadOccurrences:
 class NamingRules:
     @staticmethod
     def create():
-        return "CREATE TABLE NamingRules (id INT PRIMARY KEY, replace text, replace_by text, priority integer)"
+        return "CREATE TABLE NamingRules " \
+               "(id INTEGER PRIMARY KEY AUTOINCREMENT, replace text, replace_by text, priority integer)"
 
     @staticmethod
     def drop():
@@ -287,11 +318,19 @@ class NamingRules:
         return "SELECT * FROM NamingRules ORDER BY priority"
 
     @staticmethod
+    def select(identifier):
+        return "SELECT * FROM NamingRules WHERE id = '" + identifier + "'"
+
+    @staticmethod
     def insert(replace, replace_by, priority):
-        return "INSERT INTO NamingRules VALUES ('" \
+        return "INSERT INTO NamingRules (replace, replace_by, priority) VALUES ('" \
                + replace + "','" \
                + replace_by + "','" \
                + priority + "')"
+
+    @staticmethod
+    def get_id_of_last_entry():
+        return "SELECT id FROM NamingRules ORDER BY id DESC LIMIT 1"
 
     @staticmethod
     def update(identifier, replace, replace_by, priority):

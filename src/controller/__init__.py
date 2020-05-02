@@ -1,6 +1,3 @@
-import json
-
-from flask import jsonify
 from src.youtube_dl import YoutubeDl
 from src.database import Database
 
@@ -10,6 +7,8 @@ class Controller:
     def create_database():
         Database.create()
         return "Database created"
+
+    # Playlists --------------------------------------------------------------------------------------------------------
 
     @staticmethod
     def get_playlists():
@@ -45,6 +44,43 @@ class Controller:
     def delete_playlist(identifier):
         Database.delete_playlist(identifier)
         return "OK"
+
+    # Naming Rules -----------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_naming_rules():
+        return Database.get_naming_rules()
+
+    @staticmethod
+    def new_naming_rule(args):
+        rule_id = Database.new_naming_rule(args.replace, args.replace_by, args.priority)
+        return {
+            "id": rule_id,
+            "replace": args.replace,
+            "replace_by": args.replace_by,
+            "priority": args.priority
+        }
+
+    @staticmethod
+    def get_naming_rule(identifier):
+        return Database.get_naming_rule(identifier)
+
+    @staticmethod
+    def update_naming_rule(identifier, args):
+        Database.update_naming_rule(identifier, args.replace, args.replace_by, args.priority)
+        return {
+            "id": identifier,
+            "replace": args.replace,
+            "replace_by": args.replace_by,
+            "priority": args.priority
+        }
+
+    @staticmethod
+    def delete_naming_rule(identifier):
+        Database.delete_naming_rule(identifier)
+        return "OK"
+
+    # IN PROGRESS ------------------------------------------------------------------------------------------------------
 
     @staticmethod
     def download_playlist(playlist_id):

@@ -45,6 +45,9 @@ class Init(Resource):
         return {'message': 'Success', 'data': Controller.create_database()}, 200
 
 
+# Playlists ------------------------------------------------------------------------------------------------------------
+
+
 class Playlists(Resource):
     @staticmethod
     def get():
@@ -73,27 +76,55 @@ class Playlist(Resource):
         # Parse the arguments into an object
         args = parser.parse_args()
 
-        return {'message': 'Playlist has been updated', 'data': Controller.update_playlist(identifier, args)}, 201
+        return {'message': 'Playlist has been updated.', 'data': Controller.update_playlist(identifier, args)}, 201
 
     @staticmethod
     def delete(identifier):
-        return {'message': 'Playlist has been removed', 'data': Controller.delete_playlist(identifier)}, 200
+        return {'message': 'Playlist has been removed.', 'data': Controller.delete_playlist(identifier)}, 200
 
 
-# class UpdateYoutubeDl(Resource):
-#     @staticmethod
-#     def get():
-#         return {'message': 'Success', 'data': Controller.update_youtube_dl()}, 200
-#
-#
-# class TestingYoutubeDl(Resource):
-#     @staticmethod
-#     def get():
-#         return {'message': 'Success', 'data': Controller.list_playlist("PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT")}, 200
+# Naming Rules ---------------------------------------------------------------------------------------------------------
 
 
+class NamingRules(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.get_naming_rules()}, 200
+
+    @staticmethod
+    def post():
+        parser = reqparse.RequestParser()
+        parser.add_argument('replace', required=True)
+        parser.add_argument('replace_by', required=True)
+        parser.add_argument('priority', required=True)
+        args = parser.parse_args()
+        return {'message': 'Naming rule has been added.', 'data': Controller.new_naming_rule(args)}, 201
+
+
+class NamingRule(Resource):
+    @staticmethod
+    def get(identifier):
+        return {'message': 'Success', 'data': Controller.get_naming_rule(identifier)}, 200
+
+    @staticmethod
+    def post(identifier):
+        parser = reqparse.RequestParser()
+        parser.add_argument('replace', required=True)
+        parser.add_argument('replace_by', required=True)
+        parser.add_argument('priority', required=True)
+        args = parser.parse_args()
+        return {'message': 'Naming rule has been updated', 'data': Controller.update_naming_rule(identifier, args)}, 201
+
+    @staticmethod
+    def delete(identifier):
+        return {'message': 'Naming rule has been removed', 'data': Controller.delete_naming_rule(identifier)}, 200
+
+
+# INDEX ----------------------------------------------------------------------------------------------------------------
 api.add_resource(Init, '/initiate')
+# Playlists
 api.add_resource(Playlists, '/playlists')
 api.add_resource(Playlist, '/playlist/<identifier>')
-# api.add_resource(UpdateYoutubeDl, '/update-youtube-dl')
-# api.add_resource(TestingYoutubeDl, '/testing')
+# Naming Rules
+api.add_resource(NamingRules, '/naming-rules')
+api.add_resource(NamingRule, '/naming-rule/<identifier>')
