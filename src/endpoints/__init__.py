@@ -61,6 +61,25 @@ class Playlists(Resource):
         return {'message': 'Playlist has been added', 'data': Controller.new_playlist(args)}, 201
 
 
+class Playlist(Resource):
+    @staticmethod
+    def get(identifier):
+        return {'message': 'Success', 'data': Controller.get_playlist(identifier)}, 200
+
+    @staticmethod
+    def post(identifier):
+        parser = reqparse.RequestParser()
+        parser.add_argument('folder', required=True)
+        # Parse the arguments into an object
+        args = parser.parse_args()
+
+        return {'message': 'Playlist has been updated', 'data': Controller.update_playlist(identifier, args)}, 201
+
+    @staticmethod
+    def delete(identifier):
+        return {'message': 'Playlist has been removed', 'data': Controller.delete_playlist(identifier)}, 200
+
+
 # class UpdateYoutubeDl(Resource):
 #     @staticmethod
 #     def get():
@@ -75,5 +94,6 @@ class Playlists(Resource):
 
 api.add_resource(Init, '/initiate')
 api.add_resource(Playlists, '/playlists')
+api.add_resource(Playlist, '/playlist/<identifier>')
 # api.add_resource(UpdateYoutubeDl, '/update-youtube-dl')
 # api.add_resource(TestingYoutubeDl, '/testing')

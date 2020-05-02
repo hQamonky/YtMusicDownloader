@@ -1,3 +1,5 @@
+import json
+
 from flask import jsonify
 from src.youtube_dl import YoutubeDl
 from src.database import Database
@@ -11,19 +13,38 @@ class Controller:
 
     @staticmethod
     def get_playlists():
-        print(Database.get_playlists())
         return Database.get_playlists()
 
     @staticmethod
-    def new_playlist(json):
-        yt_playlist = YoutubeDl.list_playlist(json.url)
-        Database.new_playlist(yt_playlist['id'], yt_playlist['title'], yt_playlist['uploader'], json.folder)
+    def new_playlist(args):
+        yt_playlist = YoutubeDl.list_playlist(args.url)
+        Database.new_playlist(yt_playlist['id'], yt_playlist['title'], yt_playlist['uploader'], args.folder)
         return {
             "id": yt_playlist['id'],
             "name": yt_playlist['title'],
             "uploader": yt_playlist['uploader'],
-            "folder": json.folder
+            "folder": args.folder
         }
+
+    @staticmethod
+    def get_playlist(identifier):
+        return Database.get_playlist(identifier)
+
+    @staticmethod
+    def update_playlist(identifier, args):
+        playlist = Database.get_playlist(identifier)
+        Database.update_playlist(identifier, playlist['name'], playlist['uploader'], args.folder)
+        return {
+            "id": identifier,
+            "name": playlist['name'],
+            "uploader": playlist['uploader'],
+            "folder": args.folder
+        }
+
+    @staticmethod
+    def delete_playlist(identifier):
+        Database.delete_playlist(identifier)
+        return "OK"
 
     @staticmethod
     def download_playlist(playlist_id):

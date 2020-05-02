@@ -63,7 +63,7 @@ Subsequent response definitions will only detail the expected value of the `data
     "folder": "/home/qmk/Music/Best of WillyTracks"
 }
 ```
-## `/playlist/<id>`
+## `/playlist/<identifier>`
 ### `POST`  
 *Body*  
 ```json
