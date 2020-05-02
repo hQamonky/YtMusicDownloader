@@ -147,7 +147,11 @@ class Database:
     @staticmethod
     def get_channel(id_channel):
         channel = Database.get(Channels.select_channel(id_channel))
-        return channel[0]
+        print(channel)
+        if len(channel) == 0:
+            return id_channel
+        else:
+            return channel[0]
 
     @staticmethod
     def update_channel(identifier, separator, artist_before_title):

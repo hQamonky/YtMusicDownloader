@@ -61,26 +61,68 @@ class Controller:
         naming_rules = Database.get_naming_rules()
         # For each video in youtube playlist
         for video in yt_playlist['entries']:
-            print('for video :')
-            print(video)
+            name = video['title']
+            print('For video : ' + name + ' - ' + video['id'])
             # if video is in playlist database
             if Database.is_new_music_in_playlist(playlist_id, video['id']):
                 print('New music in this playlist...')
                 # Get video info from youtube
                 yt_video_info = YoutubeDl.get_video_info(YoutubeDl.video_url() + video['id'])
+                print('Video info :')
+                print(yt_video_info)
                 # Download it
-                YoutubeDl.download_music(YoutubeDl.video_url() + video['id'], "./" + video['id'] + ".webm")
-                # Apply naming rules
-                print(naming_rules)
-                # for naming_rule in naming_rules:
-
+                #YoutubeDl.download_music(YoutubeDl.video_url() + video['id'], "./" + video['id'] + ".webm")
                 # Get channel info from database
-                # if channel not found :
-                # Get default naming format from configuration file
-                # Insert channel entry in database with default naming format
-                # end if
-                # Set title, artist, thumbnail, date and comment to downloaded file
+                channel = Database.get_channel(yt_video_info['uploader'])
+                # if channel not found
+                if channel == yt_video_info['uploader']:
+                    # Get default naming format from configuration file
+                    separator = ' - '
+                    artist_before_title = 'true'
+                    # Insert channel entry in database with default naming format
+                    Database.new_channel(channel, separator, artist_before_title)
+                    channel = {'channel': channel, 'separator': separator, 'artist_before_title': artist_before_title}
+                print('Channel : ' + channel['channel'])
+                # Set title, artist, album, thumbnail, year and comment to downloaded file
+                # Set title and artist
+                title = yt_video_info['alt_title']
+                artist = yt_video_info['creator']
+                if title is None or artist is None:
+                    # Apply naming rules
+                    print('Applying naming rules...')
+                    for naming_rule in naming_rules:
+                        name = name.replace(naming_rule['replace'], naming_rule['replace_by'])
+                    print('Finale name : ' + name)
+                # Set title
+                if title is None:
+                    title = name
+                    split_name = name.split(channel['separator'])
+                    if len(split_name) == 2:
+                        if channel['artist_before_title'] == 'true':
+                            title = split_name[1]
+                        else:
+                            title = split_name[0]
+                # Set artist
+                if artist is None:
+                    artist = channel['channel']
+                    split_name = name.split(channel['separator'])
+                    if len(split_name) == 2:
+                        if channel['artist_before_title'] == 'true':
+                            artist = split_name[0]
+                        else:
+                            artist = split_name[1]
+                print('Title : ' + title)
+                print('artist : ' + artist)
+                # Set album
+                print('Album : ' + channel['channel'])
+                # Set year
+                year = yt_video_info['upload_date'][:-4]
+                print(year)
+                # Set comment
+                comment = '{\"platform\": \"youtube\", \"id\": \"' + video['id'] + '\"}'
+                print('Comment : ' + comment)
                 # Delete downloaded thumbnail
+                # Rename file
                 # Set permissions to downloaded file
                 # Move file to output playlist folder
                 # Insert Music in database

@@ -1,0 +1,6 @@
+{
+  "naming-format": {
+    "separator": " - ",
+    "artist_before_title": "true"
+  }
+}
