@@ -129,6 +129,33 @@ class Database:
         Database.edit(NamingRules.delete(identifier))
         return "Naming Rule removed"
 
+    # Channels ---------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_channels():
+        rules = Database.get(Channels.select_all())
+        return rules
+
+    @staticmethod
+    def new_channel(channel, separator, artist_before_title):
+        Database.edit(Channels.insert(channel, separator, artist_before_title))
+        return "Channel added"
+
+    @staticmethod
+    def get_channel(id_channel):
+        channel = Database.get(Channels.select_channel(id_channel))
+        return channel[0]
+
+    @staticmethod
+    def update_channel(identifier, separator, artist_before_title):
+        Database.edit(Channels.update(identifier, separator, artist_before_title))
+        return "Channel updated"
+
+    @staticmethod
+    def delete_channel(identifier):
+        Database.edit(Channels.delete(identifier))
+        return "Channel removed"
+
     @staticmethod
     def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
         conn = sqlite3.connect(database)
@@ -278,7 +305,11 @@ class Channels:
                + "separator = '" + separator + "'," \
                + "artist_before_title = '" + artist_before_title + "'" \
                + "WHERE " \
-                 "id = '" + channel + "'"
+                 "channel = '" + channel + "'"
+
+    @staticmethod
+    def delete(identifier):
+        return "DELETE FROM Channels WHERE channel = '" + identifier + "'"
 
 
 class DownloadOccurrences:

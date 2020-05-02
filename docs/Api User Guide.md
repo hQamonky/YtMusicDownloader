@@ -185,7 +185,7 @@ Returns list of "not seen" music.
     "id": "ftshNCG_RPk",
     "file_name": "Bad Computer - Riddle [Monstercat Release]",
     "title": "Riddle",
-    "artiste": "Bad Computer",
+    "artist": "Bad Computer",
     "channel": "Monstercat: Uncaged",
     "upload_date": "13/04/2020",
     "folder": "/home/qmk/Music/Best of WillyTracks/",
@@ -282,31 +282,32 @@ Returns list of rules.
 ### `GET`  
 *Response*  
 - `200 OK` on success  
-Returns list of format channels with title/artist renaming format rules.  
+Returns list of channels with title/artist renaming format rules.  
 ```json
 [
     {
         "channel": "Monstercat: Uncaged",
         "separator": " - ",
-        "artiste_before_title": "true"
+        "artist_before_title": "true"
     },
     {
         "channel": "Pegboard Nerds",
         "separator": " - ",
-        "artiste_before_title": "false"
+        "artist_before_title": "false"
     }
 ]
 ```
 ### `POST`
 *Body*  
 - List of rules with the following parameters :
+    - `channel` *(rule applies only if video comes from specified YT channel.)*.
     - `separator` *(string that separates title and artist)*.
-    - `artiste_before_title` *(`true` if artist name is before the title name in video name. Otherwise `false`)*.
-    - `channel` *(rule applies only if video comes from specified YT channel. Setting parameter to "default" will apply rule if the channel cannot be found in annother rule)*.
+    - `artist_before_title` *(`true` if artist name is before the title name in video name. Otherwise `false`)*.
 ```json
 {
+    "channel": "Monstercat: Uncaged",
     "separator": " - ",
-    "artiste_before_title": "true"
+    "artist_before_title": "true"
 }
 ```
 *Response*  
@@ -315,7 +316,7 @@ Returns list of format channels with title/artist renaming format rules.
 {
     "channel": "Monstercat: Uncaged",
     "separator": " - ",
-    "artiste_before_title": "true"
+    "artist_before_title": "true"
 }
 ```
 
@@ -327,7 +328,7 @@ Returns list of format channels with title/artist renaming format rules.
 {
     "channel": "Monstercat: Uncaged",
     "separator": " - ",
-    "artiste_before_title": "true"
+    "artist_before_title": "true"
 }
 ```
 ### `POST`
@@ -335,7 +336,7 @@ Returns list of format channels with title/artist renaming format rules.
 ```json
 {
     "separator": " - ",
-    "artiste_before_title": "true"
+    "artist_before_title": "true"
 }
 ```
 *Response*  
@@ -344,7 +345,7 @@ Returns list of format channels with title/artist renaming format rules.
 {
     "channel": "Monstercat: Uncaged",
     "separator": " - ",
-    "artiste_before_title": "true"
+    "artist_before_title": "true"
 }
 ```
 ### `DELETE`

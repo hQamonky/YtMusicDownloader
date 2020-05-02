@@ -80,6 +80,39 @@ class Controller:
         Database.delete_naming_rule(identifier)
         return "OK"
 
+    # Channels -----------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_channels():
+        return Database.get_channels()
+
+    @staticmethod
+    def new_channel(args):
+        Database.new_channel(args.channel, args.separator, args.artist_before_title)
+        return {
+            "channel": args.channel,
+            "separator": args.separator,
+            "artist_before_title": args.artist_before_title
+        }
+
+    @staticmethod
+    def get_channel(identifier):
+        return Database.get_channel(identifier)
+
+    @staticmethod
+    def update_channel(identifier, args):
+        Database.update_channel(identifier, args.separator, args.artist_before_title)
+        return {
+            "channel": args.channel,
+            "separator": args.separator,
+            "artist_before_title": args.artist_before_title
+        }
+
+    @staticmethod
+    def delete_channel(identifier):
+        Database.delete_channel(identifier)
+        return "OK"
+
     # IN PROGRESS ------------------------------------------------------------------------------------------------------
 
     @staticmethod
