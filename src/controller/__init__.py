@@ -58,6 +58,14 @@ class Controller:
         print("db_playlist : ")
         db_playlist = Database.get_playlist(playlist_id)
         print(db_playlist)
+        log = {
+            'id': playlist_id,
+            'name': db_playlist['name'],
+            'uploader': db_playlist['uploader'],
+            'folder': db_playlist['folder'],
+            'skipped': [],
+            'downloaded': []
+        }
         # Get list of naming rules from database
         naming_rules = Database.get_naming_rules()
         # For each video in youtube playlist
@@ -69,8 +77,6 @@ class Controller:
                 print('New music in this playlist...')
                 # Get video info from youtube
                 yt_video_info = YoutubeDl.get_video_info(YoutubeDl.video_url() + video['id'])
-                print('Video info :')
-                print(yt_video_info)
                 # Download it
                 #YoutubeDl.download_music(YoutubeDl.video_url() + video['id'], "./" + video['id'] + ".webm")
                 # Get channel info from database
@@ -80,9 +86,7 @@ class Controller:
                     # Get default naming format from configuration file
                     with open('./configuration.json') as json_file:
                         data = json.load(json_file)
-                        print(data)
                         naming_format = data['naming_format']
-                        print(naming_format)
                         separator = naming_format['separator']
                         artist_before_title = naming_format['artist_before_title']
                     # Insert channel entry in database with default naming format
@@ -120,10 +124,11 @@ class Controller:
                 print('Title : ' + title)
                 print('artist : ' + artist)
                 # Set album
-                print('Album : ' + channel['channel'])
+                album = channel['channel']
+                print('Album : ' + album)
                 # Set year
                 year = yt_video_info['upload_date'][:-4]
-                print(year)
+                print('Year : ' + year)
                 # Set comment
                 comment = '{\"platform\": \"youtube\", \"id\": \"' + video['id'] + '\"}'
                 print('Comment : ' + comment)
@@ -133,10 +138,20 @@ class Controller:
                 # Move file to output playlist folder
                 # Insert Music in database
                 # Add entry to Playlist_Music table
+                log['downloaded'].append({
+                    'id': video['id'],
+                    'name': yt_video_info['title'],
+                    'title': title,
+                    'artist': artist,
+                    'channel': album,
+                    'upload_date': year,
+                    'new': '1'
+                })
             else:
                 print('Music already downloaded -> skip')
+                log['skipped'].append(video['id'])
 
-        return playlist_id + " downloaded"
+        return log
 
     # Naming Rules -----------------------------------------------------------------------------------------------------
 

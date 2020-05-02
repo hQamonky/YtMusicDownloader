@@ -147,7 +147,6 @@ class Database:
     @staticmethod
     def get_channel(id_channel):
         channel = Database.get(Channels.select_channel(id_channel))
-        print(channel)
         if len(channel) == 0:
             return id_channel
         else:
