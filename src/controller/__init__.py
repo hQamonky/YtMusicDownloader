@@ -1,5 +1,6 @@
 from src.youtube_dl import YoutubeDl
 from src.database import Database
+import json
 
 
 class Controller:
@@ -77,8 +78,13 @@ class Controller:
                 # if channel not found
                 if channel == yt_video_info['uploader']:
                     # Get default naming format from configuration file
-                    separator = ' - '
-                    artist_before_title = 'true'
+                    with open('./configuration.json') as json_file:
+                        data = json.load(json_file)
+                        print(data)
+                        naming_format = data['naming_format']
+                        print(naming_format)
+                        separator = naming_format['separator']
+                        artist_before_title = naming_format['artist_before_title']
                     # Insert channel entry in database with default naming format
                     Database.new_channel(channel, separator, artist_before_title)
                     channel = {'channel': channel, 'separator': separator, 'artist_before_title': artist_before_title}
