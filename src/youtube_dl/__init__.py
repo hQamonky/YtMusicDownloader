@@ -37,7 +37,7 @@ class YoutubeDl:
     def list_playlist(url):
         process = subprocess.run(["youtube-dl", "-ci", "--flat-playlist", "-J", url],
                                  check=True, stdout=subprocess.PIPE, universal_newlines=True)
-        json_string = '[' + process.stdout[:-1] + ']'
+        json_string = process.stdout[:-1]
         js = json.loads(json_string)
         return js
 

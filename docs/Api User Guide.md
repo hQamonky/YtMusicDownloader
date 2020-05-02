@@ -17,7 +17,7 @@ Manage, through this API, a daemon that automatically downloads music from YouTu
     - Set title/artist default format to apply
 ## Usage
 All requests will have the `Application/json` header.  
-All `POST` and `DELETE` requests will take a `json` as a body.  
+All `POST` requests will take a `json` as a body.  
 All responses will have the form :  
 ```json
 {
@@ -34,15 +34,13 @@ Subsequent response definitions will only detail the expected value of the `data
 [
     {
         "id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
-        "title": "Best of Willy tracks 2020 part 2",
+        "name": "Best of Willy tracks 2020 part 2",
         "uploader": "William Herlicq",
-        "uploader_id": "UCT8Y-bugDyR4ADHoQ-FOluw",
         "folder": "/home/qmk/Music/Best of WillyTracks"
     },{
         "id": "PLCVGGn6GhhDtHxCJcPNymXhCtyEisxERY",
-        "title": "Best of Chill Music",
+        "name": "Best of Chill Music",
         "uploader": "William Herlicq",
-        "uploader_id": "UCT8Y-bugDyR4ADHoQ-FOluw",
         "folder": "/home/qmk/Music/Chill"
     }
 ]
@@ -60,9 +58,8 @@ Subsequent response definitions will only detail the expected value of the `data
 ```json
 {
     "id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
-    "title": "Best of Willy tracks 2020 part 2",
+    "name": "Best of Willy tracks 2020 part 2",
     "uploader": "William Herlicq",
-    "uploader_id": "UCT8Y-bugDyR4ADHoQ-FOluw",
     "folder": "/home/qmk/Music/Best of WillyTracks"
 }
 ```

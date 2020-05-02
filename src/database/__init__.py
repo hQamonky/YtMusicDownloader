@@ -1,12 +1,13 @@
 import sqlite3
 
-conn = sqlite3.connect('ytMusicDownloader.db')
+database = 'ytMusicDownloader.db'
 
 
 class Database:
     # Creates the database. Warning : this will override the existing database.
     @staticmethod
     def create():
+        conn = sqlite3.connect(database)
         c = conn.cursor()
         # Create tables
         c.execute(Playlists.create())
@@ -22,42 +23,95 @@ class Database:
         conn.close()
 
     @staticmethod
-    def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
+    def edit(request):
+        conn = sqlite3.connect(database)
         c = conn.cursor()
         # Insert new entries
-        c.execute(Music.insert(id_music, name, title, artist, channel, upload_date))
-        c.execute(PlaylistMusic.insert(id_playlist, id_music))
+        c.execute(request)
         # Save (commit) the changes
         conn.commit()
         # Close the connection
         conn.close()
 
+    @staticmethod
+    def get(request):
+        conn = sqlite3.connect(database)
+        # Convert data format to json
+        conn.row_factory = Database.dict_factory
+        c = conn.cursor()
+        # Insert new entries
+        data = c.execute(request)
+        # Save (commit) the changes
+        conn.commit()
+        # Close the connection
+        conn.close()
+        return data
+
+    @staticmethod
+    def dict_factory(cursor, row):
+        d = {}
+        for idx, col in enumerate(cursor.description):
+            d[col[0]] = row[idx]
+        return d
+
+    @staticmethod
+    def get_playlists():
+        playlists = Database.get(Playlists.select_all())
+        return playlists
+
+    @staticmethod
+    def new_playlist(identifier, name, uploader, folder):
+        Database.edit(Playlists.insert(identifier, name, uploader, folder))
+        return "Playlist added"
+
+    @staticmethod
+    def get_playlist(id_playlist):
+        playlist = Database.get(Playlists.select(id_playlist))
+        return playlist
+
+    @staticmethod
+    def get_playlist_music(id_playlist):
+        music = Database.get(PlaylistMusic.select_playlist(id_playlist))
+        return music
+
+    @staticmethod
+    def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+        c.execute(Music.insert(id_music, name, title, artist, channel, upload_date))
+        c.execute(PlaylistMusic.insert(id_playlist, id_music))
+        conn.commit()
+        conn.close()
+        return "Music added"
+
 
 class Playlists:
     @staticmethod
     def create():
-        return "CREATE TABLE Playlists (id text, name text, uploader text, id_uploader text, folder text)"
+        return "CREATE TABLE Playlists (id text, name text, uploader text, folder text)"
 
     @staticmethod
-    def select():
+    def select_all():
         return "SELECT * FROM Playlists"
 
     @staticmethod
-    def insert(identifier, name, uploader, id_uploader, folder):
+    def select(identifier):
+        return "SELECT * FROM Playlists WHERE id = '" + identifier + "'"
+
+    @staticmethod
+    def insert(identifier, name, uploader, folder):
         return "INSERT INTO Playlists VALUES ('" \
                + identifier + "','" \
                + name + "','" \
                + uploader + "','" \
-               + id_uploader + "','" \
                + folder + "')"
 
     @staticmethod
-    def update(identifier, name, uploader, id_uploader, folder):
+    def update(identifier, name, uploader, folder):
         return "UPDATE Playlists SET " \
                + "name = '" + name + "'," \
                + "uploader = '" + uploader + "'," \
-               + "id_uploader = '" + id_uploader + "'," \
-               + "folder = '" + folder + "'"\
+               + "folder = '" + folder + "'" \
                + "WHERE " \
                  "id = '" + identifier + "'"
 
@@ -92,7 +146,7 @@ class Music:
         return "UPDATE Music SET " \
                + "title = '" + title + "'," \
                + "artist = '" + artist + "'," \
-               + "new = '" + new + "'"\
+               + "new = '" + new + "'" \
                + "WHERE " \
                  "id = '" + identifier + "'"
 
@@ -131,7 +185,7 @@ class Channels:
         return "CREATE TABLE Channels (channel text, separator text, artist_before_title integer)"
 
     @staticmethod
-    def select():
+    def select_all():
         return "SELECT * FROM  Channels "
 
     @staticmethod
@@ -149,7 +203,7 @@ class Channels:
     def update(channel, separator, artist_before_title):
         return "UPDATE  Channels  SET " \
                + "separator = '" + separator + "'," \
-               + "artist_before_title = '" + artist_before_title + "'"\
+               + "artist_before_title = '" + artist_before_title + "'" \
                + "WHERE " \
                  "id = '" + channel + "'"
 
@@ -160,7 +214,7 @@ class DownloadOccurrences:
         return "CREATE TABLE DownloadOccurrences (occurrence text)"
 
     @staticmethod
-    def select():
+    def select_all():
         return "SELECT * FROM DownloadOccurrences"
 
     @staticmethod
@@ -178,8 +232,8 @@ class NamingRules:
         return "CREATE TABLE NamingRules (id integer, replace text, replace_by text, priority integer)"
 
     @staticmethod
-    def select():
-        return "SELECT * FROM NamingRules"
+    def select_all():
+        return "SELECT * FROM NamingRules ORDER BY priority"
 
     @staticmethod
     def insert(replace, replace_by, priority):
@@ -193,7 +247,7 @@ class NamingRules:
         return "UPDATE NamingRules SET " \
                + "replace = '" + replace + "'," \
                + "replace_by = '" + replace_by + "'," \
-               + "priority = '" + priority + "'"\
+               + "priority = '" + priority + "'" \
                + "WHERE " \
                  "id = '" + identifier + "'"
 

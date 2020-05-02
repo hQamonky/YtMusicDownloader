@@ -39,47 +39,41 @@ def index():
         return markdown.markdown(content)
 
 
+class Init(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.create_database()}, 200
+
+
 class Playlists(Resource):
-    def get(self):
-        shelf = get_db()
-        keys = list(shelf.keys())
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.get_playlists()}, 200
 
-        devices = []
-
-        for key in keys:
-            devices.append(shelf[key])
-
-        return {'message': 'Success', 'data': devices}, 200
-
-    def post(self):
+    @staticmethod
+    def post():
         parser = reqparse.RequestParser()
-
-        parser.add_argument('identifier', required=True)
-        parser.add_argument('name', required=True)
-        parser.add_argument('device_type', required=True)
-        parser.add_argument('controller_gateway', required=True)
-
+        parser.add_argument('url', required=True)
+        parser.add_argument('folder', required=True)
         # Parse the arguments into an object
         args = parser.parse_args()
 
-        shelf = get_db()
-        shelf[args['identifier']] = args
-
-        return {'message': 'Device registered', 'data': args}, 201
+        return {'message': 'Playlist has been added', 'data': Controller.new_playlist(args)}, 201
 
 
-class UpdateYoutubeDl(Resource):
-    @staticmethod
-    def get():
-        return {'message': 'Success', 'data': Controller.update_youtube_dl()}, 200
+# class UpdateYoutubeDl(Resource):
+#     @staticmethod
+#     def get():
+#         return {'message': 'Success', 'data': Controller.update_youtube_dl()}, 200
+#
+#
+# class TestingYoutubeDl(Resource):
+#     @staticmethod
+#     def get():
+#         return {'message': 'Success', 'data': Controller.list_playlist("PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT")}, 200
 
 
-class TestingYoutubeDl(Resource):
-    @staticmethod
-    def get():
-        return {'message': 'Success', 'data': Controller.list_playlist("PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT")}, 200
-
-
+api.add_resource(Init, '/initiate')
 api.add_resource(Playlists, '/playlists')
-api.add_resource(UpdateYoutubeDl, '/update-youtube-dl')
-api.add_resource(TestingYoutubeDl, '/testing')
+# api.add_resource(UpdateYoutubeDl, '/update-youtube-dl')
+# api.add_resource(TestingYoutubeDl, '/testing')
