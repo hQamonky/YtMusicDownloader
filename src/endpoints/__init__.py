@@ -45,6 +45,12 @@ class Init(Resource):
         return {'message': 'Success', 'data': Controller.create_database()}, 200
 
 
+class About(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.get_configuration()}, 200
+
+
 # Playlists ------------------------------------------------------------------------------------------------------------
 
 
@@ -163,6 +169,7 @@ class Channel(Resource):
 
 
 # INDEX ----------------------------------------------------------------------------------------------------------------
+api.add_resource(About, '/about')
 api.add_resource(Init, '/initiate')
 # Playlists
 api.add_resource(Playlists, '/playlists')

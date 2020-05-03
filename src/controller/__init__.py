@@ -11,6 +11,13 @@ from mutagen.easyid3 import EasyID3
 
 class Controller:
     @staticmethod
+    def get_configuration():
+        # Get configuration file
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        return config
+
+    @staticmethod
     def create_database():
         Database.create()
         return "Database created"
@@ -95,7 +102,7 @@ class Controller:
                 # if channel not found
                 if channel == yt_video_info['uploader']:
                     # Get default naming format from configuration file
-                    with open('./configuration.json') as json_file:
+                    with open('./src/configuration.json') as json_file:
                         config = json.load(json_file)
                         naming_format = config['naming_format']
                         separator = naming_format['separator']
@@ -263,16 +270,3 @@ class Controller:
             EasyID3.RegisterTextKey("comment", "COMM")
             tag['comment'] = comment
         tag.save(v2_version=3)
-
-    # IN PROGRESS ------------------------------------------------------------------------------------------------------
-
-    # Youtube-dl methods
-    @staticmethod
-    def get_video_info(video_id):
-        result = YoutubeDl.get_video_info(YoutubeDl.video_url() + video_id)
-        return result
-
-    @staticmethod
-    def download_music(video_id):
-        result = YoutubeDl.download_music(YoutubeDl.video_url() + video_id, "./" + video_id + ".webm")
-        return result
