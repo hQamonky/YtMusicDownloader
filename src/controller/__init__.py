@@ -1,10 +1,11 @@
-import stat
-import subprocess
+import mutagen
 
 from src.youtube_dl import YoutubeDl
 from src.database import Database
 import json
 import os
+import subprocess
+from mutagen.easyid3 import EasyID3
 
 
 class Controller:
@@ -101,7 +102,6 @@ class Controller:
                     Database.new_channel(channel, separator, artist_before_title)
                     channel = {'channel': channel, 'separator': separator, 'artist_before_title': artist_before_title}
                 print('Channel : ' + channel['channel'])
-                # Set title, artist, album, thumbnail, year and comment to downloaded file
                 # Set title and artist
                 title = yt_video_info['alt_title']
                 artist = yt_video_info['creator']
@@ -130,7 +130,7 @@ class Controller:
                         else:
                             artist = split_name[1]
                 print('Title : ' + title)
-                print('artist : ' + artist)
+                print('Artist : ' + artist)
                 # Set album
                 album = channel['channel']
                 print('Album : ' + album)
@@ -140,12 +140,12 @@ class Controller:
                 # Set comment
                 comment = '{\"platform\": \"youtube\", \"id\": \"' + video['id'] + '\"}'
                 print('Comment : ' + comment)
-                # Set file details
-                # Delete downloaded thumbnail
                 # Set permissions to downloaded file
                 file = r'./' + video['id'] + '.mp3'
                 subprocess.run(["sudo", "chmod", "o+rw", file],
                                check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                # Set metadata tags
+                Controller.set_id3_tags(file, title, artist, album, year, comment)
                 # Rename and move file to output playlist folder
                 output_folder = r'' + db_playlist['folder']
                 os.makedirs(output_folder, exist_ok=True)
@@ -234,6 +234,28 @@ class Controller:
     def delete_channel(identifier):
         Database.delete_channel(identifier)
         return "OK"
+
+    # Other ------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def set_id3_tags(file, title, artist, album, year, comment):
+        try:
+            tag = EasyID3(file)
+        except:
+            tag = mutagen.File(file, easy=True)
+            tag.add_tags()
+        if title:
+            tag['title'] = title
+        if artist:
+            tag['artist'] = artist
+        if album:
+            tag['album'] = album
+        if year:
+            tag['date'] = year
+        if comment:
+            EasyID3.RegisterTextKey("comment", "COMM")
+            tag['comment'] = comment
+        tag.save(v2_version=3)
 
     # IN PROGRESS ------------------------------------------------------------------------------------------------------
 
