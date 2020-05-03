@@ -10,20 +10,20 @@ class Database:
         conn = sqlite3.connect(database)
         c = conn.cursor()
         # Delete tables if exists
-        c.execute(Playlists.drop())
+        # c.execute(Playlists.drop())
         c.execute(Music.drop())
         c.execute(PlaylistMusic.drop())
-        c.execute(DownloadOccurrences.drop())
-        c.execute(NamingRules.drop())
-        c.execute(Channels.drop())
+        # c.execute(DownloadOccurrences.drop())
+        # c.execute(NamingRules.drop())
+        # c.execute(Channels.drop())
 
         # Create tables
-        c.execute(Playlists.create())
+        # c.execute(Playlists.create())
         c.execute(Music.create())
         c.execute(PlaylistMusic.create())
-        c.execute(DownloadOccurrences.create())
-        c.execute(NamingRules.create())
-        c.execute(Channels.create())
+        # c.execute(DownloadOccurrences.create())
+        # c.execute(NamingRules.create())
+        # c.execute(Channels.create())
         # Save (commit) the changes
         conn.commit()
         # We can also close the connection if we are done with it.
@@ -54,6 +54,20 @@ class Database:
         # Close the connection
         conn.close()
         return data
+
+    @staticmethod
+    def connect():
+        conn = sqlite3.connect(database)
+        # Convert data format to json
+        conn.row_factory = Database.dict_factory
+        return conn
+
+    @staticmethod
+    def close(conn):
+        # Save (commit) the changes
+        conn.commit()
+        # Close the connection
+        conn.close()
 
     @staticmethod
     def dict_factory(cursor, row):
@@ -103,6 +117,23 @@ class Database:
             return True
         else:
             return False
+
+    # Music ------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
+        Music.insert(id_music, name, title, artist, channel, upload_date)
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+        # c.execute(Music.insert(id_music, name, title, artist, channel, upload_date))
+        # c.execute(PlaylistMusic.insert(id_playlist, id_music))
+        conn.commit()
+        conn.close()
+        return "Music added"
+
+    @staticmethod
+    def test():
+        return Database.get(Music.select_new())
 
     # Naming Rules -----------------------------------------------------------------------------------------------------
 
@@ -162,16 +193,6 @@ class Database:
         Database.edit(Channels.delete(identifier))
         return "Channel removed"
 
-    @staticmethod
-    def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
-        conn = sqlite3.connect(database)
-        c = conn.cursor()
-        c.execute(Music.insert(id_music, name, title, artist, channel, upload_date))
-        c.execute(PlaylistMusic.insert(id_playlist, id_music))
-        conn.commit()
-        conn.close()
-        return "Music added"
-
 
 # TODO : Protect requests from SQL injections
 
@@ -230,14 +251,18 @@ class Music:
 
     @staticmethod
     def insert(identifier, name, title, artist, channel, upload_date):
-        return "INSERT INTO Music VALUES ('" \
-               + identifier + "','" \
-               + name + "','" \
-               + title + "','" \
-               + artist + "','" \
-               + channel + "','" \
-               + upload_date + "','" \
-               + "1')"
+        conn = Database.connect()
+        c = conn.cursor()
+        print('Request params : ')
+        print('identifier : ' + identifier)
+        print('name : ' + name)
+        print('title : ' + title)
+        print('artist : ' + artist)
+        print('channel : ' + channel)
+        print('upload_date : ' + upload_date)
+        c.execute("INSERT INTO Music VALUES (?, ?, ?, ?, ?, ?, '1')",
+                  (identifier, name, title, artist, channel, upload_date))
+        Database.close(conn)
 
     @staticmethod
     def update(identifier, title, artist, new):
