@@ -53,7 +53,7 @@ class YoutubeDl:
     def download_music(url, output):
         process = subprocess.run(["sudo", "youtube-dl", "-ci",
                                   "-x", "--audio-format", "mp3",
-                                  "--write-thumbnail",
+                                  "--embed-thumbnail",
                                   "-o", output,
                                   url],
                                  check=True, stdout=subprocess.PIPE, universal_newlines=True)

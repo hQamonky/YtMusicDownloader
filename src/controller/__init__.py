@@ -1,6 +1,10 @@
+import stat
+import subprocess
+
 from src.youtube_dl import YoutubeDl
 from src.database import Database
 import json
+import os
 
 
 class Controller:
@@ -17,6 +21,8 @@ class Controller:
 
     @staticmethod
     def new_playlist(args):
+        if args.folder[-1:] == '/':
+            args.folder = args.folder[:-1]
         yt_playlist = YoutubeDl.list_playlist(args.url)
         Database.new_playlist(yt_playlist['id'], yt_playlist['title'], yt_playlist['uploader'], args.folder)
         return {
@@ -32,6 +38,8 @@ class Controller:
 
     @staticmethod
     def update_playlist(identifier, args):
+        if args.folder[-1:] == '/':
+            args.folder = args.folder[:-1]
         playlist = Database.get_playlist(identifier)
         Database.update_playlist(identifier, playlist['name'], playlist['uploader'], args.folder)
         return {
@@ -77,16 +85,16 @@ class Controller:
                 print('New music in this playlist...')
                 # Get video info from youtube
                 yt_video_info = YoutubeDl.get_video_info(YoutubeDl.video_url() + video['id'])
-                # Download it
-                #YoutubeDl.download_music(YoutubeDl.video_url() + video['id'], "./" + video['id'] + ".webm")
+                # Download video
+                YoutubeDl.download_music(YoutubeDl.video_url() + video['id'], "./" + video['id'] + ".webm")
                 # Get channel info from database
                 channel = Database.get_channel(yt_video_info['uploader'])
                 # if channel not found
                 if channel == yt_video_info['uploader']:
                     # Get default naming format from configuration file
                     with open('./configuration.json') as json_file:
-                        data = json.load(json_file)
-                        naming_format = data['naming_format']
+                        config = json.load(json_file)
+                        naming_format = config['naming_format']
                         separator = naming_format['separator']
                         artist_before_title = naming_format['artist_before_title']
                     # Insert channel entry in database with default naming format
@@ -132,10 +140,16 @@ class Controller:
                 # Set comment
                 comment = '{\"platform\": \"youtube\", \"id\": \"' + video['id'] + '\"}'
                 print('Comment : ' + comment)
+                # Set file details
                 # Delete downloaded thumbnail
-                # Rename file
                 # Set permissions to downloaded file
-                # Move file to output playlist folder
+                file = r'./' + video['id'] + '.mp3'
+                subprocess.run(["sudo", "chmod", "o+rw", file],
+                               check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                # Rename and move file to output playlist folder
+                output_folder = r'' + db_playlist['folder']
+                os.makedirs(output_folder, exist_ok=True)
+                os.rename(file, output_folder + '/' + yt_video_info['title'] + '.mp3')
                 # Insert Music in database
                 # Add entry to Playlist_Music table
                 log['downloaded'].append({
