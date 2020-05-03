@@ -4,57 +4,6 @@ database = 'ytMusicDownloader.db'
 
 
 class Database:
-    # Creates the database. Warning : this will override the existing database.
-    @staticmethod
-    def create():
-        conn = sqlite3.connect(database)
-        c = conn.cursor()
-        # Delete tables if exists
-        # c.execute(Playlists.drop())
-        c.execute(Music.drop())
-        c.execute(PlaylistMusic.drop())
-        # c.execute(DownloadOccurrences.drop())
-        # c.execute(NamingRules.drop())
-        # c.execute(Channels.drop())
-
-        # Create tables
-        # c.execute(Playlists.create())
-        c.execute(Music.create())
-        c.execute(PlaylistMusic.create())
-        # c.execute(DownloadOccurrences.create())
-        # c.execute(NamingRules.create())
-        # c.execute(Channels.create())
-        # Save (commit) the changes
-        conn.commit()
-        # We can also close the connection if we are done with it.
-        # Just be sure any changes have been committed or they will be lost.
-        conn.close()
-
-    @staticmethod
-    def edit(request):
-        conn = sqlite3.connect(database)
-        c = conn.cursor()
-        # Insert new entries
-        c.execute(request)
-        # Save (commit) the changes
-        conn.commit()
-        # Close the connection
-        conn.close()
-
-    @staticmethod
-    def get(request):
-        conn = sqlite3.connect(database)
-        # Convert data format to json
-        conn.row_factory = Database.dict_factory
-        c = conn.cursor()
-        # Insert new entries
-        data = c.execute(request).fetchall()
-        # Save (commit) the changes
-        conn.commit()
-        # Close the connection
-        conn.close()
-        return data
-
     @staticmethod
     def connect():
         conn = sqlite3.connect(database)
@@ -66,7 +15,8 @@ class Database:
     def close(conn):
         # Save (commit) the changes
         conn.commit()
-        # Close the connection
+        # We can also close the connection if we are done with it.
+        # Just be sure any changes have been committed or they will be lost.
         conn.close()
 
     @staticmethod
@@ -76,43 +26,81 @@ class Database:
             d[col[0]] = row[idx]
         return d
 
+    # Creates the database. Warning : this will override the existing database.
+    @staticmethod
+    def create():
+        connection = Database.connect()
+        c = connection.cursor()
+
+        # Delete tables if exists
+        Playlists.drop(c)
+        Music.drop(c)
+        PlaylistMusic.drop(c)
+        DownloadOccurrences.drop(c)
+        NamingRules.drop(c)
+        Channels.drop(c)
+
+        # Create tables
+        Playlists.create(c)
+        Music.create(c)
+        PlaylistMusic.create(c)
+        DownloadOccurrences.create(c)
+        NamingRules.create(c)
+        Channels.create(c)
+
+        Database.close(connection)
+
     # Playlists --------------------------------------------------------------------------------------------------------
 
     @staticmethod
     def get_playlists():
-        playlists = Database.get(Playlists.select_all())
+        connection = Database.connect()
+        c = connection.cursor()
+        playlists = Playlists.select_all(c)
+        Database.close(connection)
         return playlists
 
     @staticmethod
     def new_playlist(identifier, name, uploader, folder):
-        Database.edit(Playlists.insert(identifier, name, uploader, folder))
+        connection = Database.connect()
+        c = connection.cursor()
+        Playlists.insert(c, identifier, name, uploader, folder)
+        Database.close(connection)
         return "Playlist added"
 
     @staticmethod
     def get_playlist(id_playlist):
-        playlist = Database.get(Playlists.select(id_playlist))
+        connection = Database.connect()
+        c = connection.cursor()
+        playlist = Playlists.select(c, id_playlist)
+        Database.close(connection)
         return playlist[0]
 
     @staticmethod
     def update_playlist(id_playlist, name, uploader, folder):
-        Database.edit(Playlists.update(id_playlist, name, uploader, folder))
+        connection = Database.connect()
+        c = connection.cursor()
+        Playlists.update(c, id_playlist, name, uploader, folder)
+        Database.close(connection)
         return "Playlist updated"
 
     @staticmethod
     def delete_playlist(id_playlist):
-        conn = sqlite3.connect(database)
-        c = conn.cursor()
+        connection = Database.connect()
+        c = connection.cursor()
         # Delete entry in Playlists table
-        c.execute(Playlists.delete(id_playlist))
+        Playlists.delete(c, id_playlist)
         # Delete all entries in Playlist_Music table with id_playlist
-        c.execute(PlaylistMusic.delete_playlist(id_playlist))
-        conn.commit()
-        conn.close()
+        PlaylistMusic.delete_playlist(c, id_playlist)
+        Database.close(connection)
         return "Playlist removed"
 
     @staticmethod
     def is_new_music_in_playlist(id_playlist, id_music):
-        count = Database.get(PlaylistMusic.count_playlist_music(id_playlist, id_music))[0]['COUNT(*)']
+        connection = Database.connect()
+        c = connection.cursor()
+        count = PlaylistMusic.count_playlist_music(c, id_playlist, id_music)[0]['COUNT(*)']
+        Database.close(connection)
         if count == 0:
             return True
         else:
@@ -122,62 +110,88 @@ class Database:
 
     @staticmethod
     def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
-        Music.insert(id_music, name, title, artist, channel, upload_date)
-        conn = sqlite3.connect(database)
-        c = conn.cursor()
-        # c.execute(Music.insert(id_music, name, title, artist, channel, upload_date))
-        # c.execute(PlaylistMusic.insert(id_playlist, id_music))
-        conn.commit()
-        conn.close()
+        connection = Database.connect()
+        c = connection.cursor()
+        Music.insert(c, id_music, name, title, artist, channel, upload_date)
+        PlaylistMusic.insert(c, id_playlist, id_music)
+        Database.close(connection)
         return "Music added"
 
     @staticmethod
     def test():
-        return Database.get(Music.select_new())
+        connection = Database.connect()
+        c = connection.cursor()
+        music = Music.select_new(c)
+        Database.close(connection)
+        return music
 
     # Naming Rules -----------------------------------------------------------------------------------------------------
 
     @staticmethod
     def get_naming_rules():
-        rules = Database.get(NamingRules.select_all())
+        connection = Database.connect()
+        c = connection.cursor()
+        rules = NamingRules.select_all(c)
+        Database.close(connection)
         return rules
 
     @staticmethod
     def new_naming_rule(replace, replace_by, priority):
-        Database.edit(NamingRules.insert(replace, replace_by, priority))
-        identifier = Database.get(NamingRules.get_id_of_last_entry())
+        connection = Database.connect()
+        c = connection.cursor()
+        NamingRules.insert(c, replace, replace_by, priority)
+        identifier = NamingRules.get_id_of_last_entry(c)
+        Database.close(connection)
         return identifier[0]['id']
 
     @staticmethod
     def get_naming_rule(id_rule):
-        rule = Database.get(NamingRules.select(id_rule))
+        connection = Database.connect()
+        c = connection.cursor()
+        rule = NamingRules.select(c, id_rule)
+        Database.close(connection)
         return rule[0]
 
     @staticmethod
     def update_naming_rule(identifier, replace, replace_by, priority):
-        Database.edit(NamingRules.update(identifier, replace, replace_by, priority))
+        connection = Database.connect()
+        c = connection.cursor()
+        NamingRules.update(c, identifier, replace, replace_by, priority)
+        Database.close(connection)
         return "Naming Rule updated"
 
     @staticmethod
     def delete_naming_rule(identifier):
-        Database.edit(NamingRules.delete(identifier))
+        connection = Database.connect()
+        c = connection.cursor()
+        NamingRules.delete(c, identifier)
+        Database.close(connection)
         return "Naming Rule removed"
 
     # Channels ---------------------------------------------------------------------------------------------------------
 
     @staticmethod
     def get_channels():
-        rules = Database.get(Channels.select_all())
+        connection = Database.connect()
+        c = connection.cursor()
+        rules = Channels.select_all(c)
+        Database.close(connection)
         return rules
 
     @staticmethod
     def new_channel(channel, separator, artist_before_title):
-        Database.edit(Channels.insert(channel, separator, artist_before_title))
+        connection = Database.connect()
+        c = connection.cursor()
+        Channels.insert(c, channel, separator, artist_before_title)
+        Database.close(connection)
         return "Channel added"
 
     @staticmethod
     def get_channel(id_channel):
-        channel = Database.get(Channels.select_channel(id_channel))
+        connection = Database.connect()
+        c = connection.cursor()
+        channel = Channels.select_channel(c, id_channel)
+        Database.close(connection)
         if len(channel) == 0:
             return id_channel
         else:
@@ -185,229 +199,235 @@ class Database:
 
     @staticmethod
     def update_channel(identifier, separator, artist_before_title):
-        Database.edit(Channels.update(identifier, separator, artist_before_title))
+        connection = Database.connect()
+        c = connection.cursor()
+        Channels.update(c, identifier, separator, artist_before_title)
+        Database.close(connection)
         return "Channel updated"
 
     @staticmethod
     def delete_channel(identifier):
-        Database.edit(Channels.delete(identifier))
+        connection = Database.connect()
+        c = connection.cursor()
+        Channels.delete(c, identifier)
+        Database.close(connection)
         return "Channel removed"
 
 
-# TODO : Protect requests from SQL injections
+# Requests -------------------------------------------------------------------------------------------------------------
+
 
 class Playlists:
     @staticmethod
-    def create():
-        return "CREATE TABLE Playlists (id text PRIMARY KEY, name text, uploader text, folder text)"
+    def create(cursor):
+        cursor.execute("CREATE TABLE Playlists (id text PRIMARY KEY, name text, uploader text, folder text)")
 
     @staticmethod
-    def drop():
-        return "DROP TABLE IF EXISTS Playlists"
+    def drop(cursor):
+        cursor.execute("DROP TABLE IF EXISTS Playlists")
 
     @staticmethod
-    def select_all():
-        return "SELECT * FROM Playlists"
+    def select_all(cursor):
+        cursor.execute("SELECT * FROM Playlists")
+        return cursor.fetchall()
 
     @staticmethod
-    def select(identifier):
-        return "SELECT * FROM Playlists WHERE id = '" + identifier + "'"
+    def select(cursor, identifier):
+        cursor.execute("SELECT * FROM Playlists WHERE id = ?", identifier)
+        return cursor.fetchall()
 
     @staticmethod
-    def insert(identifier, name, uploader, folder):
-        return "INSERT INTO Playlists VALUES ('" \
-               + identifier + "','" \
-               + name + "','" \
-               + uploader + "','" \
-               + folder + "')"
+    def insert(cursor, identifier, name, uploader, folder):
+        cursor.execute("INSERT INTO Music VALUES (?, ?, ?, ?)",
+                       (identifier, name, uploader, folder))
 
     @staticmethod
-    def update(identifier, name, uploader, folder):
-        return "UPDATE Playlists SET " \
-               + "name = '" + name + "'," \
-               + "uploader = '" + uploader + "'," \
-               + "folder = '" + folder + "'" \
-               + "WHERE " \
-                 "id = '" + identifier + "'"
+    def update(cursor, identifier, name, uploader, folder):
+        cursor.execute("UPDATE Playlists SET "
+                       "name = ?, "
+                       "uploader = ?, "
+                       "folder = ? "
+                       "WHERE "
+                       "id = ?)",
+                       (name, uploader, folder, identifier))
 
     @staticmethod
-    def delete(identifier):
-        return "DELETE FROM Playlists WHERE id = '" + identifier + "'"
+    def delete(cursor, identifier):
+        cursor.execute("DELETE FROM Playlists WHERE id = ?", identifier)
 
 
 class Music:
     @staticmethod
-    def create():
-        return "CREATE TABLE Music " \
-               "(id text PRIMARY KEY, name text, title text, artist text, channel text, upload_date date, new integer)"
+    def create(cursor):
+        cursor.execute("CREATE TABLE Music (id text PRIMARY KEY, "
+                       "name text, title text, artist text, channel text, upload_date date, new integer)")
 
     @staticmethod
-    def drop():
-        return "DROP TABLE IF EXISTS Music"
+    def drop(cursor):
+        cursor.execute("DROP TABLE IF EXISTS Music")
 
     @staticmethod
-    def select_new():
-        return "SELECT * FROM Music WHERE new = '1'"
+    def select_new(cursor):
+        cursor.execute("SELECT * FROM Music WHERE new = '1'")
+        return cursor.fetchall()
 
     @staticmethod
-    def insert(identifier, name, title, artist, channel, upload_date):
-        conn = Database.connect()
-        c = conn.cursor()
-        print('Request params : ')
-        print('identifier : ' + identifier)
-        print('name : ' + name)
-        print('title : ' + title)
-        print('artist : ' + artist)
-        print('channel : ' + channel)
-        print('upload_date : ' + upload_date)
-        c.execute("INSERT INTO Music VALUES (?, ?, ?, ?, ?, ?, '1')",
-                  (identifier, name, title, artist, channel, upload_date))
-        Database.close(conn)
+    def insert(cursor, identifier, name, title, artist, channel, upload_date):
+        cursor.execute("INSERT INTO Music VALUES (?, ?, ?, ?, ?, ?, '1')",
+                       (identifier, name, title, artist, channel, upload_date))
 
     @staticmethod
-    def update(identifier, title, artist, new):
-        return "UPDATE Music SET " \
-               + "title = '" + title + "'," \
-               + "artist = '" + artist + "'," \
-               + "new = '" + new + "'" \
-               + "WHERE " \
-                 "id = '" + identifier + "'"
+    def update(cursor, identifier, title, artist, new):
+        cursor.execute("UPDATE Music SET "
+                       "title = ?, "
+                       "artist = ?, "
+                       "new = ? "
+                       "WHERE "
+                       "id = ?)",
+                       (title, artist, new, identifier))
 
     @staticmethod
-    def delete(identifier):
-        return "DELETE FROM Music WHERE id = '" + identifier + "'"
+    def delete(cursor, identifier):
+        cursor.execute("DELETE FROM Music WHERE id = ?", identifier)
 
 
 class PlaylistMusic:
     @staticmethod
-    def create():
-        return "CREATE TABLE Playlist_Music (id INTEGER PRIMARY KEY AUTOINCREMENT, id_playlist text, id_music text)"
+    def create(cursor):
+        cursor.execute("CREATE TABLE Playlist_Music "
+                       "(id INTEGER PRIMARY KEY AUTOINCREMENT, id_playlist text, id_music text)")
 
     @staticmethod
-    def drop():
-        return "DROP TABLE IF EXISTS Playlist_Music"
+    def drop(cursor):
+        cursor.execute("DROP TABLE IF EXISTS Playlist_Music")
 
     @staticmethod
-    def select_playlist(id_playlist):
-        return "SELECT * FROM Playlist_Music WHERE id_playlist = '" + id_playlist + "'"
+    def select_playlist(cursor, id_playlist):
+        cursor.execute("SELECT * FROM Playlist_Music WHERE id_playlist = ?", id_playlist)
+        return cursor.fetchall()
 
     @staticmethod
-    def select_music(id_music):
-        return "SELECT * FROM Playlist_Music WHERE id_music = '" + id_music + "'"
+    def select_music(cursor, id_music):
+        cursor.execute("SELECT * FROM Playlist_Music WHERE id_music = ?", id_music)
+        return cursor.fetchall()
 
     @staticmethod
-    def count_playlist_music(id_playlist, id_music):
-        return "SELECT COUNT(*) FROM Playlist_Music " \
-               "WHERE id_playlist = '" + id_playlist + "' AND id_music = '" + id_music + "'"
+    def count_playlist_music(cursor, id_playlist, id_music):
+        cursor.execute("SELECT COUNT(*) FROM Playlist_Music "
+                       "WHERE id_playlist = ? AND id_music = ?", (id_playlist, id_music))
+        return cursor.fetchall()
 
     @staticmethod
-    def insert(id_playlist, id_music):
-        return "INSERT INTO Playlist_Music (id_playlist, id_music) VALUES ('" \
-               + id_playlist + "','" \
-               + id_music + "')"
+    def insert(cursor, id_playlist, id_music):
+        cursor.execute("INSERT INTO Playlist_Music (id_playlist, id_music) "
+                       "VALUES (?, ?)", (id_playlist, id_music))
 
     @staticmethod
-    def delete_playlist(id_playlist):
-        return "DELETE FROM Playlist_Music WHERE id_playlist = '" + id_playlist + "'"
+    def delete_playlist(cursor, id_playlist):
+        cursor.execute("DELETE FROM Playlist_Music WHERE id_playlist = ?", id_playlist)
 
 
 class Channels:
     @staticmethod
-    def create():
-        return "CREATE TABLE Channels (channel text PRIMARY KEY, separator text, artist_before_title integer)"
+    def create(cursor):
+        cursor.execute("CREATE TABLE Channels (channel text PRIMARY KEY, separator text, artist_before_title integer)")
 
     @staticmethod
-    def drop():
-        return "DROP TABLE IF EXISTS Channels"
+    def drop(cursor):
+        cursor.execute("DROP TABLE IF EXISTS Channels")
 
     @staticmethod
-    def select_all():
-        return "SELECT * FROM  Channels "
+    def select_all(cursor):
+        cursor.execute("SELECT * FROM  Channels")
+        return cursor.fetchall()
 
     @staticmethod
-    def select_channel(channel):
-        return "SELECT * FROM  Channels WHERE channel = '" + channel + "'"
+    def select_channel(cursor, channel):
+        cursor.execute("SELECT * FROM Channels WHERE channel = ?", channel)
+        return cursor.fetchall()
 
     @staticmethod
-    def insert(channel, separator, artist_before_title):
-        return "INSERT INTO  Channels  VALUES ('" \
-               + channel + "','" \
-               + separator + "','" \
-               + artist_before_title + "')"
+    def insert(cursor, channel, separator, artist_before_title):
+        cursor.execute("INSERT INTO Channels VALUES (?, ?, ?)",
+                       (channel, separator, artist_before_title))
 
     @staticmethod
-    def update(channel, separator, artist_before_title):
-        return "UPDATE  Channels  SET " \
-               + "separator = '" + separator + "'," \
-               + "artist_before_title = '" + artist_before_title + "'" \
-               + "WHERE " \
-                 "channel = '" + channel + "'"
+    def update(cursor, channel, separator, artist_before_title):
+        cursor.execute("UPDATE Channels SET "
+                       "separator = ?, "
+                       "artist_before_title = ? "
+                       "WHERE "
+                       "channel = ?)",
+                       (separator, artist_before_title, channel))
 
     @staticmethod
-    def delete(identifier):
-        return "DELETE FROM Channels WHERE channel = '" + identifier + "'"
+    def delete(cursor, identifier):
+        cursor.execute("DELETE FROM Channels WHERE channel = ?", identifier)
 
 
 class DownloadOccurrences:
     @staticmethod
-    def create():
-        return "CREATE TABLE DownloadOccurrences (occurrence text PRIMARY KEY)"
+    def create(cursor):
+        cursor.execute("CREATE TABLE DownloadOccurrences (occurrence text PRIMARY KEY)")
 
     @staticmethod
-    def drop():
-        return "DROP TABLE IF EXISTS DownloadOccurrences"
+    def drop(cursor):
+        cursor.execute("DROP TABLE IF EXISTS DownloadOccurrences")
 
     @staticmethod
-    def select_all():
-        return "SELECT * FROM DownloadOccurrences"
+    def select_all(cursor):
+        cursor.execute("SELECT * FROM DownloadOccurrences")
+        return cursor.fetchall()
 
     @staticmethod
-    def insert(time):
-        return "INSERT INTO DownloadOccurrences VALUES ('" + time + "')"
+    def insert(cursor, time):
+        cursor.execute("INSERT INTO DownloadOccurrences VALUES ?", time)
 
     @staticmethod
-    def delete(time):
-        return "DELETE FROM DownloadOccurrences WHERE occurrence = '" + time + "'"
+    def delete(cursor, identifier):
+        cursor.execute("DELETE FROM DownloadOccurrences WHERE occurrence = ?", identifier)
 
 
 class NamingRules:
     @staticmethod
-    def create():
-        return "CREATE TABLE NamingRules " \
-               "(id INTEGER PRIMARY KEY AUTOINCREMENT, replace text, replace_by text, priority integer)"
+    def create(cursor):
+        cursor.execute("CREATE TABLE NamingRules "
+                       "(id INTEGER PRIMARY KEY AUTOINCREMENT, replace text, replace_by text, priority integer)")
 
     @staticmethod
-    def drop():
-        return "DROP TABLE IF EXISTS NamingRules"
+    def drop(cursor):
+        cursor.execute("DROP TABLE IF EXISTS NamingRules")
 
     @staticmethod
-    def select_all():
-        return "SELECT * FROM NamingRules ORDER BY priority"
+    def select_all(cursor):
+        cursor.execute("SELECT * FROM NamingRules ORDER BY priority")
+        return cursor.fetchall()
 
     @staticmethod
-    def select(identifier):
-        return "SELECT * FROM NamingRules WHERE id = '" + identifier + "'"
+    def select(cursor, identifier):
+        cursor.execute("SELECT * FROM NamingRules WHERE id = ?", identifier)
+        return cursor.fetchall()
 
     @staticmethod
-    def insert(replace, replace_by, priority):
-        return "INSERT INTO NamingRules (replace, replace_by, priority) VALUES ('" \
-               + replace + "','" \
-               + replace_by + "','" \
-               + priority + "')"
+    def insert(cursor, replace, replace_by, priority):
+        cursor.execute("INSERT INTO NamingRules (replace, replace_by, priority) "
+                       "VALUES ?", (replace, replace_by, priority))
 
     @staticmethod
-    def get_id_of_last_entry():
-        return "SELECT id FROM NamingRules ORDER BY id DESC LIMIT 1"
+    def get_id_of_last_entry(cursor):
+        cursor.execute("SELECT id FROM NamingRules ORDER BY id DESC LIMIT 1")
+        return cursor.fetchall()
 
     @staticmethod
-    def update(identifier, replace, replace_by, priority):
-        return "UPDATE NamingRules SET " \
-               + "replace = '" + replace + "'," \
-               + "replace_by = '" + replace_by + "'," \
-               + "priority = '" + priority + "'" \
-               + "WHERE " \
-                 "id = '" + identifier + "'"
+    def update(cursor, identifier, replace, replace_by, priority):
+        cursor.execute("UPDATE NamingRules SET "
+                       "replace = ?, "
+                       "replace_by = ? "
+                       "priority = ? "
+                       "WHERE "
+                       "identifier = ?)",
+                       (replace, replace_by, priority, identifier))
 
     @staticmethod
-    def delete(identifier):
-        return "DELETE FROM NamingRules WHERE id = '" + identifier + "'"
+    def delete(cursor, identifier):
+        cursor.execute("DELETE FROM NamingRules WHERE id = ?", identifier)
