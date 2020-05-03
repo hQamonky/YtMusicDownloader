@@ -152,7 +152,6 @@ class Channel(Resource):
     @staticmethod
     def post(identifier):
         parser = reqparse.RequestParser()
-        parser.add_argument('channel', required=True)
         parser.add_argument('separator', required=True)
         parser.add_argument('artist_before_title', required=True)
         args = parser.parse_args()

@@ -232,7 +232,7 @@ class Controller:
     def update_channel(identifier, args):
         Database.update_channel(identifier, args.separator, args.artist_before_title)
         return {
-            "channel": args.channel,
+            "channel": identifier,
             "separator": args.separator,
             "artist_before_title": args.artist_before_title
         }

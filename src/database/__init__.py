@@ -233,12 +233,12 @@ class Playlists:
 
     @staticmethod
     def select(cursor, identifier):
-        cursor.execute("SELECT * FROM Playlists WHERE id = ?", identifier)
+        cursor.execute("SELECT * FROM Playlists WHERE id = ?", (identifier,))
         return cursor.fetchall()
 
     @staticmethod
     def insert(cursor, identifier, name, uploader, folder):
-        cursor.execute("INSERT INTO Music VALUES (?, ?, ?, ?)",
+        cursor.execute("INSERT INTO Playlists VALUES (?, ?, ?, ?)",
                        (identifier, name, uploader, folder))
 
     @staticmethod
@@ -248,12 +248,12 @@ class Playlists:
                        "uploader = ?, "
                        "folder = ? "
                        "WHERE "
-                       "id = ?)",
+                       "id = ?",
                        (name, uploader, folder, identifier))
 
     @staticmethod
     def delete(cursor, identifier):
-        cursor.execute("DELETE FROM Playlists WHERE id = ?", identifier)
+        cursor.execute("DELETE FROM Playlists WHERE id = ?", (identifier,))
 
 
 class Music:
@@ -283,12 +283,12 @@ class Music:
                        "artist = ?, "
                        "new = ? "
                        "WHERE "
-                       "id = ?)",
+                       "id = ?",
                        (title, artist, new, identifier))
 
     @staticmethod
     def delete(cursor, identifier):
-        cursor.execute("DELETE FROM Music WHERE id = ?", identifier)
+        cursor.execute("DELETE FROM Music WHERE id = ?", (identifier,))
 
 
 class PlaylistMusic:
@@ -303,12 +303,12 @@ class PlaylistMusic:
 
     @staticmethod
     def select_playlist(cursor, id_playlist):
-        cursor.execute("SELECT * FROM Playlist_Music WHERE id_playlist = ?", id_playlist)
+        cursor.execute("SELECT * FROM Playlist_Music WHERE id_playlist = ?", (id_playlist,))
         return cursor.fetchall()
 
     @staticmethod
     def select_music(cursor, id_music):
-        cursor.execute("SELECT * FROM Playlist_Music WHERE id_music = ?", id_music)
+        cursor.execute("SELECT * FROM Playlist_Music WHERE id_music = ?", (id_music,))
         return cursor.fetchall()
 
     @staticmethod
@@ -324,7 +324,7 @@ class PlaylistMusic:
 
     @staticmethod
     def delete_playlist(cursor, id_playlist):
-        cursor.execute("DELETE FROM Playlist_Music WHERE id_playlist = ?", id_playlist)
+        cursor.execute("DELETE FROM Playlist_Music WHERE id_playlist = ?", (id_playlist,))
 
 
 class Channels:
@@ -343,7 +343,7 @@ class Channels:
 
     @staticmethod
     def select_channel(cursor, channel):
-        cursor.execute("SELECT * FROM Channels WHERE channel = ?", channel)
+        cursor.execute("SELECT * FROM Channels WHERE channel = ?", (channel,))
         return cursor.fetchall()
 
     @staticmethod
@@ -357,12 +357,12 @@ class Channels:
                        "separator = ?, "
                        "artist_before_title = ? "
                        "WHERE "
-                       "channel = ?)",
+                       "channel = ?",
                        (separator, artist_before_title, channel))
 
     @staticmethod
     def delete(cursor, identifier):
-        cursor.execute("DELETE FROM Channels WHERE channel = ?", identifier)
+        cursor.execute("DELETE FROM Channels WHERE channel = ?", (identifier,))
 
 
 class DownloadOccurrences:
@@ -381,11 +381,11 @@ class DownloadOccurrences:
 
     @staticmethod
     def insert(cursor, time):
-        cursor.execute("INSERT INTO DownloadOccurrences VALUES ?", time)
+        cursor.execute("INSERT INTO DownloadOccurrences VALUES ?", (time,))
 
     @staticmethod
     def delete(cursor, identifier):
-        cursor.execute("DELETE FROM DownloadOccurrences WHERE occurrence = ?", identifier)
+        cursor.execute("DELETE FROM DownloadOccurrences WHERE occurrence = ?", (identifier,))
 
 
 class NamingRules:
@@ -405,13 +405,13 @@ class NamingRules:
 
     @staticmethod
     def select(cursor, identifier):
-        cursor.execute("SELECT * FROM NamingRules WHERE id = ?", identifier)
+        cursor.execute("SELECT * FROM NamingRules WHERE id = ?", (identifier,))
         return cursor.fetchall()
 
     @staticmethod
     def insert(cursor, replace, replace_by, priority):
         cursor.execute("INSERT INTO NamingRules (replace, replace_by, priority) "
-                       "VALUES ?", (replace, replace_by, priority))
+                       "VALUES (?, ?, ?)", (replace, replace_by, priority))
 
     @staticmethod
     def get_id_of_last_entry(cursor):
@@ -425,9 +425,9 @@ class NamingRules:
                        "replace_by = ? "
                        "priority = ? "
                        "WHERE "
-                       "identifier = ?)",
+                       "identifier = ?",
                        (replace, replace_by, priority, identifier))
 
     @staticmethod
     def delete(cursor, identifier):
-        cursor.execute("DELETE FROM NamingRules WHERE id = ?", identifier)
+        cursor.execute("DELETE FROM NamingRules WHERE id = ?", (identifier,))
