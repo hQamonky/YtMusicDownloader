@@ -15,7 +15,7 @@ YtMusicDownloader actually needs sudoer privilege to modify permissions of the d
 This is because youtube-dl needs to be executed as sudo to download videos and this results in the downloaded files being owned by root.
 You also need sudo privilege to run the youtube-dl update command.  
 Here's how to make it work:
-Edit the /etc/sudoers file (`sudo nano /etc/sudoers) and add the following lines:  
+Edit the /etc/sudoers file (`sudo nano /etc/sudoers`) and add the following lines:  
 `*username* ALL=(ALL:ALL) NOPASSWD:/usr/local/bin/youtube-dl -U`  
 `*username* ALL=(ALL:ALL) NOPASSWD:/bin/chmod`  
 `*username* ALL=(ALL:ALL) NOPASSWD:/bin/chown`  
