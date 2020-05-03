@@ -5,6 +5,7 @@ from src.database import Database
 import json
 import os
 import subprocess
+import getpass
 from mutagen.easyid3 import EasyID3
 
 
@@ -58,7 +59,8 @@ class Controller:
     @staticmethod
     def download_playlist(playlist_id):
         # Update youtube-dl
-        YoutubeDl.update()
+        print('Updating youtube-dl...')
+        print(YoutubeDl.update())
         # Get playlist info from youtube
         print("yt_playlist : ")
         yt_playlist = YoutubeDl.list_playlist(YoutubeDl.playlist_url() + playlist_id)
@@ -143,6 +145,9 @@ class Controller:
                 # Set permissions to downloaded file
                 file = r'./' + video['id'] + '.mp3'
                 subprocess.run(["sudo", "chmod", "o+rw", file],
+                               check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                username = getpass.getuser()
+                subprocess.run(["sudo", "chown", username, file],
                                check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 # Set metadata tags
                 Controller.set_id3_tags(file, title, artist, album, year, comment)

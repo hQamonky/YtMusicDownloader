@@ -18,6 +18,7 @@ Here's how to make it work:
 Edit the /etc/sudoers file (`sudo nano /etc/sudoers) and add the following lines:  
 `*username* ALL=(ALL:ALL) NOPASSWD:/usr/local/bin/youtube-dl -U`  
 `*username* ALL=(ALL:ALL) NOPASSWD:/bin/chmod`  
+`*username* ALL=(ALL:ALL) NOPASSWD:/bin/chown`  
 What this does is that your user can now use these two commands with sudo without the need of enter the password.  
 This is secure because you still need to be connected as the user to use the commands, and you have to enter the password to do so.  
 It is only unsecure if you fear that someone physically uses your computer while you left with your session open.   
