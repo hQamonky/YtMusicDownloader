@@ -59,8 +59,8 @@ class Controller:
     @staticmethod
     def download_playlist(playlist_id):
         # Update youtube-dl
-        print('Updating youtube-dl...')
-        print(YoutubeDl.update())
+        print('Checking for youtube-dl updates...')
+        print(YoutubeDl.update()['message'])
         # Get playlist info from youtube
         print("yt_playlist : ")
         yt_playlist = YoutubeDl.list_playlist(YoutubeDl.playlist_url() + playlist_id)
@@ -156,6 +156,8 @@ class Controller:
                 os.makedirs(output_folder, exist_ok=True)
                 os.rename(file, output_folder + '/' + yt_video_info['title'] + '.mp3')
                 # Insert Music in database
+                Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
+                                   yt_video_info['upload_date'])
                 # Add entry to Playlist_Music table
                 log['downloaded'].append({
                     'id': video['id'],
