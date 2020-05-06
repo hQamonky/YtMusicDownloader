@@ -5,7 +5,6 @@ from src.database import Database
 import json
 import os
 import subprocess
-import getpass
 from mutagen.easyid3 import EasyID3
 
 
@@ -94,13 +93,16 @@ class Controller:
             if Database.is_new_music_in_playlist(playlist_id, video['id']):
                 print('New music in this playlist...')
                 # Get video info from youtube
-                yt_video_info = YoutubeDl.get_video_info(YoutubeDl.video_url() + video['id'])
+                # yt_video_info = YoutubeDl.get_video_info(YoutubeDl.video_url() + video['id'])
+                yt_video_info = YoutubeDl.get_video_info_without_ytdl(YoutubeDl.video_url() + video['id'])
                 # Download video
                 YoutubeDl.download_music(YoutubeDl.video_url() + video['id'], "./" + video['id'] + ".webm")
                 # Get channel info from database
-                channel = Database.get_channel(yt_video_info['uploader'])
+                # channel = Database.get_channel(yt_video_info['uploader'])
+                channel = Database.get_channel(yt_video_info['author_name'])
                 # if channel not found
-                if channel == yt_video_info['uploader']:
+                # if channel == yt_video_info['uploader']:
+                if channel == yt_video_info['author_name']:
                     # Get default naming format from configuration file
                     with open('./src/configuration.json') as json_file:
                         config = json.load(json_file)
@@ -112,8 +114,10 @@ class Controller:
                     channel = {'channel': channel, 'separator': separator, 'artist_before_title': artist_before_title}
                 print('Channel : ' + channel['channel'])
                 # Set title and artist
-                title = yt_video_info['alt_title']
-                artist = yt_video_info['creator']
+                # title = yt_video_info['alt_title']
+                # artist = yt_video_info['creator']
+                title = None
+                artist = None
                 if title is None or artist is None:
                     # Apply naming rules
                     print('Applying naming rules...')
@@ -144,27 +148,30 @@ class Controller:
                 album = channel['channel']
                 print('Album : ' + album)
                 # Set year
-                year = yt_video_info['upload_date'][:-4]
-                print('Year : ' + year)
+                # year = yt_video_info['upload_date'][:-4]
+                # print('Year : ' + year)
                 # Set comment
                 comment = '{\"platform\": \"youtube\", \"id\": \"' + video['id'] + '\"}'
                 print('Comment : ' + comment)
                 # Set permissions to downloaded file
                 file = r'./' + video['id'] + '.mp3'
-                subprocess.run(["sudo", "chmod", "o+rw", file],
-                               check=True, stdout=subprocess.PIPE, universal_newlines=True)
-                username = getpass.getuser()
-                subprocess.run(["sudo", "chown", username, file],
+                subprocess.run(["chmod", "644", file],
                                check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 # Set metadata tags
-                Controller.set_id3_tags(file, title, artist, album, year, comment)
+                # Controller.set_id3_tags(file, title, artist, album, year, comment)
+                Controller.set_id3_tags(file, title, artist, album, comment)
                 # Rename and move file to output playlist folder
                 output_folder = r'' + db_playlist['folder']
                 os.makedirs(output_folder, exist_ok=True)
+                # find output_folder -type d - exec chmod 755
+                # subprocess.run(["find", output_folder, "-type", "d", "-exec", "chmod", "755"],
+                #                check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                subprocess.run(["chmod", "755", output_folder],
+                               check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 os.rename(file, output_folder + '/' + yt_video_info['title'] + '.mp3')
                 # Insert Music in database
-                Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
-                                   yt_video_info['upload_date'])
+                # Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
+                #                    yt_video_info['upload_date'])
                 # Add entry to Playlist_Music table
                 log['downloaded'].append({
                     'id': video['id'],
@@ -172,7 +179,7 @@ class Controller:
                     'title': title,
                     'artist': artist,
                     'channel': album,
-                    'upload_date': year,
+                    # 'upload_date': year,
                     'new': '1'
                 })
             else:
@@ -252,7 +259,8 @@ class Controller:
     # Other ------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def set_id3_tags(file, title, artist, album, year, comment):
+    # def set_id3_tags(file, title, artist, album, year, comment):
+    def set_id3_tags(file, title, artist, album, comment):
         try:
             tag = EasyID3(file)
         except:
@@ -264,8 +272,8 @@ class Controller:
             tag['artist'] = artist
         if album:
             tag['album'] = album
-        if year:
-            tag['date'] = year
+        # if year:
+        #     tag['date'] = year
         if comment:
             EasyID3.RegisterTextKey("comment", "COMM")
             tag['comment'] = comment
