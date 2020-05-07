@@ -50,6 +50,45 @@ class Database:
 
         Database.close(connection)
 
+    @staticmethod
+    def add_factory_entries():
+        connection = Database.connect()
+        c = connection.cursor()
+
+        # Add Pegboard Nerds channel
+        Channels.insert(c, "Pegboard Nerds", " - ", "false")
+
+        # Add naming rules
+        # priority 1
+        NamingRules.insert(c, " ‒ ", " - ", "1")
+        # priority 2
+        NamingRules.insert(c, " [NCS Release]", "", "2")
+        NamingRules.insert(c, " [Monstercat Release]", "", "2")
+        NamingRules.insert(c, " [NCS Official Video]", "", "2")
+        NamingRules.insert(c, " [Monstercat FREE Release]", "", "2")
+        NamingRules.insert(c, " [Monstercat Official Music Video]", "", "2")
+        NamingRules.insert(c, " [Monstercat EP Release]", "", "2")
+        NamingRules.insert(c, " [Tasty Release]", "", "2")
+        NamingRules.insert(c, " | Diversity Release", "", "2")
+        NamingRules.insert(c, " (Lyrics _ Lyric Video)", "", "2")
+        NamingRules.insert(c, " | HQ Videoclip", "", "2")
+        NamingRules.insert(c, " | Official Videoclip", "", "2")
+        NamingRules.insert(c, " | Videoclip", "", "2")
+        NamingRules.insert(c, " (Videoclip) ♦ Hardstyle ♦", "", "2")
+        NamingRules.insert(c, " ♦ Hardstyle Remix (Videoclip) ♦", "", "2")
+        NamingRules.insert(c, " [Videoclip]", "", "2")
+        NamingRules.insert(c, " (Official Music Video)", "", "2")
+        NamingRules.insert(c, " (Official Video Clip)", "", "2")
+        NamingRules.insert(c, " (Official Videoclip)", "", "2")
+        NamingRules.insert(c, " (Official Video)", "", "2")
+        NamingRules.insert(c, " (Official Preview)", "", "2")
+        NamingRules.insert(c, " (official music video)", "", "2")
+        NamingRules.insert(c, " | Complexity Release", "", "2")
+        # priority 3
+        NamingRules.insert(c, "♦ Hardstyle ♦", "(Hardstyle)", "3")
+
+        Database.close(connection)
+
     # Playlists --------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -109,13 +148,22 @@ class Database:
     # Music ------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
+    # def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
+    def new_music(id_playlist, id_music, name, title, artist, channel):
         connection = Database.connect()
         c = connection.cursor()
         Music.insert(c, id_music, name, title, artist, channel, upload_date)
         PlaylistMusic.insert(c, id_playlist, id_music)
         Database.close(connection)
         return "Music added"
+
+    @staticmethod
+    def update_music(id_music, title, artist, new):
+        connection = Database.connect()
+        c = connection.cursor()
+        Music.update(c, id_music, title, artist, new)
+        Database.close(connection)
+        return "Music updated"
 
     @staticmethod
     def get_new_music():
@@ -260,7 +308,8 @@ class Music:
     @staticmethod
     def create(cursor):
         cursor.execute("CREATE TABLE Music (id text PRIMARY KEY, "
-                       "name text, title text, artist text, channel text, upload_date date, new integer)")
+                       # "name text, title text, artist text, channel text, upload_date date, new integer)")
+                       "name text, title text, artist text, channel text, new integer)")
 
     @staticmethod
     def drop(cursor):
@@ -272,9 +321,10 @@ class Music:
         return cursor.fetchall()
 
     @staticmethod
-    def insert(cursor, identifier, name, title, artist, channel, upload_date):
-        cursor.execute("INSERT INTO Music VALUES (?, ?, ?, ?, ?, ?, '1')",
-                       (identifier, name, title, artist, channel, upload_date))
+    # def insert(cursor, identifier, name, title, artist, channel, upload_date):
+    def insert(cursor, identifier, name, title, artist, channel):
+        cursor.execute("INSERT INTO Music VALUES (?, ?, ?, ?, ?, '1')",
+                       (identifier, name, title, artist, channel))
 
     @staticmethod
     def update(cursor, identifier, title, artist, new):

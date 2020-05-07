@@ -26,6 +26,62 @@ All responses will have the form :
 }
 ```
 Subsequent response definitions will only detail the expected value of the `data field`.
+## `/configuration`
+### `GET`  
+*Response* 
+Display configuration   
+- `200 OK` on success  
+```json
+{
+    "version": "0.1", 
+    "user": "qmk", 
+    "naming_format": {
+        "separator": " - ", 
+        "artist_before_title": "true"
+    }
+}
+```
+## `/configuration/user`
+### `POST`  
+*Body*  
+```json
+{
+    "user": "qmk"
+}
+```
+*Response*  
+- `201 Updated` on success  
+```json
+{
+    "version": "0.1", 
+    "user": "qmk", 
+    "naming_format": {
+        "separator": " - ", 
+        "artist_before_title": "true"
+    }
+}
+```
+## `/configuration/naming-format`
+### `POST`  
+*Body*  
+```json
+{
+    "separator": " - ", 
+    "artist_before_title": "true"
+}
+```
+*Response*  
+- `201 Updated` on success  
+```json
+{
+    "version": "0.1", 
+    "user": "qmk", 
+    "naming_format": {
+        "separator": " - ", 
+        "artist_before_title": "true"
+    }
+}
+```
 ## `/playlists`
 ### `GET`  
 *Response*  

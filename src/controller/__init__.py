@@ -197,8 +197,9 @@ class Controller:
                                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 os.rename(file, output_folder + '/' + yt_video_info['title'] + '.mp3')
                 # Insert Music in database
-                Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
-                                   yt_video_info['upload_date'])
+                # Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
+                #                    yt_video_info['upload_date'])
+                Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'])
                 # Add entry to Playlist_Music table
                 log['downloaded'].append({
                     'id': video['id'],
@@ -214,6 +215,22 @@ class Controller:
                 log['skipped'].append(video['id'])
 
         return log
+
+    # Music ------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_new_music():
+        return Database.get_new_music()
+
+    @staticmethod
+    def update_music(identifier, args):
+        Database.update_music(identifier, args.title, args.artist, args.new)
+        return {
+            "id": identifier,
+            "title": args.title,
+            "artist": args.artist,
+            "new": args.new
+        }
 
     # Naming Rules -----------------------------------------------------------------------------------------------------
 

@@ -114,6 +114,26 @@ class DownloadPlaylist(Resource):
         return {'message': 'Success', 'data': Controller.download_playlist(playlist_id)}, 201
 
 
+# Music ----------------------------------------------------------------------------------------------------------------
+
+
+class Music(Resource):
+    @staticmethod
+    def post(identifier):
+        parser = reqparse.RequestParser()
+        parser.add_argument('title', required=True)
+        parser.add_argument('artist', required=True)
+        parser.add_argument('new', required=True)
+        args = parser.parse_args()
+        return {'message': 'Music has been updated.', 'data': Controller.update_music(identifier, args)}, 201
+
+
+class NewMusic(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.get_new_music()}, 200
+
+
 # Naming Rules ---------------------------------------------------------------------------------------------------------
 
 
@@ -144,7 +164,8 @@ class NamingRule(Resource):
         parser.add_argument('replace_by', required=True)
         parser.add_argument('priority', required=True)
         args = parser.parse_args()
-        return {'message': 'Naming rule has been updated.', 'data': Controller.update_naming_rule(identifier, args)}, 201
+        return {'message': 'Naming rule has been updated.',
+                'data': Controller.update_naming_rule(identifier, args)}, 201
 
     @staticmethod
     def delete(identifier):
@@ -196,6 +217,9 @@ api.add_resource(Init, '/initiate')
 api.add_resource(Playlists, '/playlists')
 api.add_resource(Playlist, '/playlist/<identifier>')
 api.add_resource(DownloadPlaylist, '/playlist/<playlist_id>/download')
+# Music
+api.add_resource(NewMusic, '/music/new')
+api.add_resource(Music, '/music/<identifier>')
 # Naming Rules
 api.add_resource(NamingRules, '/naming-rules')
 api.add_resource(NamingRule, '/naming-rule/<identifier>')
