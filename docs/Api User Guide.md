@@ -82,6 +82,9 @@ Display configuration
     }
 }
 ```
+## `/factory-reset`
+### `POST`  
+Reset configuration and database to default.
 ## `/playlists`
 ### `GET`  
 *Response*  
