@@ -143,7 +143,7 @@ Display configuration
 - `404 Not found` if playlist does not exist
 - `200 OK` on success  
 
-## `/playlist/<id>/download`
+## `/playlist/<identifier>/download`
 *Response*  
 ### `POST`  
 Trigger download.  
@@ -222,7 +222,7 @@ Returns list of "not seen" music.
     }
 ]
 ```
-## `/music/<id>`
+## `/music/<identifier>`
 ### `POST`  
 *Body*  
 - Rename a music.  
@@ -300,7 +300,7 @@ Returns list of rules.
 }
 ```
 
-## `/naming-rule/<id>`
+## `/naming-rule/<identifier>`
 ### `GET`  
 *Response*  
 - `200 OK` on success   
@@ -376,7 +376,7 @@ Returns list of channels with title/artist renaming format rules.
 }
 ```
 
-## `/channel/<id>`
+## `/channel/<identifier>`
 ### `GET`  
 *Response*  
 - `200 OK` on success  

@@ -38,9 +38,18 @@ class Controller:
         return config
 
     @staticmethod
-    def create_database():
+    def clear_database():
         Database.create()
         return "Database created"
+
+    @staticmethod
+    def factory_reset():
+        config = '{"version": "0.1", "user": "", "naming_format": {"separator": " - ", "artist_before_title": "true"}}'
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        Database.create()
+        Database.add_factory_entries()
+        return "Configuration and Database restored"
 
     # Playlists --------------------------------------------------------------------------------------------------------
 

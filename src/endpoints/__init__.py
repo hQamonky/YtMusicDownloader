@@ -39,10 +39,10 @@ def index():
         return markdown.markdown(content)
 
 
-class Init(Resource):
+class FactoryReset(Resource):
     @staticmethod
-    def get():
-        return {'message': 'Success', 'data': Controller.create_database()}, 200
+    def post():
+        return {'message': 'Success', 'data': Controller.factory_reset()}, 201
 
 
 class Config(Resource):
@@ -212,7 +212,7 @@ class Channel(Resource):
 api.add_resource(Config, '/configuration')
 api.add_resource(ConfigUser, '/configuration/user')
 api.add_resource(ConfigNamingFormat, '/configuration/naming-format')
-api.add_resource(Init, '/initiate')
+api.add_resource(FactoryReset, '/factory-reset')
 # Playlists
 api.add_resource(Playlists, '/playlists')
 api.add_resource(Playlist, '/playlist/<identifier>')
