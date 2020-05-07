@@ -1,6 +1,6 @@
 import sqlite3
 
-database = 'ytMusicDownloader.db'
+database = './src/ytMusicDownloader.db'
 
 
 class Database:
@@ -118,7 +118,7 @@ class Database:
         return "Music added"
 
     @staticmethod
-    def test():
+    def get_new_music():
         connection = Database.connect()
         c = connection.cursor()
         music = Music.select_new(c)

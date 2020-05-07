@@ -3,7 +3,7 @@ import os
 import shelve
 
 # Import the framework
-from flask import Flask, g
+from flask import Flask, g, json
 from flask_restful import Resource, Api, reqparse
 from src.controller import Controller
 
@@ -45,10 +45,29 @@ class Init(Resource):
         return {'message': 'Success', 'data': Controller.create_database()}, 200
 
 
-class About(Resource):
+class Config(Resource):
     @staticmethod
     def get():
         return {'message': 'Success', 'data': Controller.get_configuration()}, 200
+
+
+class ConfigUser(Resource):
+    @staticmethod
+    def post():
+        parser = reqparse.RequestParser()
+        parser.add_argument('user', required=True)
+        args = parser.parse_args()
+        return {'message': 'Success', 'data': Controller.update_config_user(args)}, 200
+
+
+class ConfigNamingFormat(Resource):
+    @staticmethod
+    def post():
+        parser = reqparse.RequestParser()
+        parser.add_argument('separator', required=True)
+        parser.add_argument('artist_before_title', required=True)
+        args = parser.parse_args()
+        return {'message': 'Success', 'data': Controller.update_config_naming_format(args)}, 200
 
 
 # Playlists ------------------------------------------------------------------------------------------------------------
@@ -169,7 +188,9 @@ class Channel(Resource):
 
 
 # INDEX ----------------------------------------------------------------------------------------------------------------
-api.add_resource(About, '/about')
+api.add_resource(Config, '/configuration')
+api.add_resource(ConfigUser, '/configuration/user')
+api.add_resource(ConfigNamingFormat, '/configuration/naming-format')
 api.add_resource(Init, '/initiate')
 # Playlists
 api.add_resource(Playlists, '/playlists')

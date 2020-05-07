@@ -17,6 +17,27 @@ class Controller:
         return config
 
     @staticmethod
+    def update_config_naming_format(args):
+        # Get configuration file
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        config['naming_format']['separator'] = args.separator
+        config['naming_format']['artist_before_title'] = args.artist_before_title
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        return config
+
+    @staticmethod
+    def update_config_user(args):
+        # Get configuration file
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        config['user'] = args.user
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        return config
+
+    @staticmethod
     def create_database():
         Database.create()
         return "Database created"
@@ -155,23 +176,29 @@ class Controller:
                 print('Comment : ' + comment)
                 # Set permissions to downloaded file
                 file = r'./' + video['id'] + '.mp3'
-                subprocess.run(["chmod", "644", file],
-                               check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                user = Controller.get_user_from_config()
+                if user is not None:
+                    subprocess.run(["chown", user, file],
+                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                else:
+                    subprocess.run(["chmod", "644", file],
+                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 # Set metadata tags
                 # Controller.set_id3_tags(file, title, artist, album, year, comment)
                 Controller.set_id3_tags(file, title, artist, album, comment)
                 # Rename and move file to output playlist folder
                 output_folder = r'' + db_playlist['folder']
                 os.makedirs(output_folder, exist_ok=True)
-                # find output_folder -type d - exec chmod 755
-                # subprocess.run(["find", output_folder, "-type", "d", "-exec", "chmod", "755"],
-                #                check=True, stdout=subprocess.PIPE, universal_newlines=True)
-                subprocess.run(["chmod", "755", output_folder],
-                               check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                if user is not None:
+                    subprocess.run(["chown", user, output_folder],
+                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                else:
+                    subprocess.run(["chmod", "755", output_folder],
+                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 os.rename(file, output_folder + '/' + yt_video_info['title'] + '.mp3')
                 # Insert Music in database
-                # Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
-                #                    yt_video_info['upload_date'])
+                Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
+                                   yt_video_info['upload_date'])
                 # Add entry to Playlist_Music table
                 log['downloaded'].append({
                     'id': video['id'],
@@ -278,3 +305,9 @@ class Controller:
             EasyID3.RegisterTextKey("comment", "COMM")
             tag['comment'] = comment
         tag.save(v2_version=3)
+
+    @staticmethod
+    def get_user_from_config():
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        return config['user']
