@@ -127,7 +127,7 @@ Reset configuration and database to default.
     "folder": "/Music/Best of WillyTracks"
 }
 ```
-**Note that the root of the folder (here /Music) must be the one that was configured during the docker run command of the setup!**
+**Note that the root of the folder (here /Music) must be the one that was configured during the docker run command of the setup!**  
 *Response*  
 - `201 Created` on success  
 ```json

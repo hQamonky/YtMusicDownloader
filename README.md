@@ -62,8 +62,8 @@ Then stop the container with:
 You can also use the `docker kill` command, refer to the docker documentation for more information on that.  
 # Update
 Unfortunately, there is no "simple" update process, you basically have to do the whole installation process again :)  
-Well not everything actually, you already have installed docker and setup the container. So depending on the update, might not need to rebuild the docker container.
-**Be aware that the following steps might (normally should not) overwrite your data. If you don't want to lose it, make a backup of ytMusicDownloader.db and of configuration.json in ~/qmk/YtMusicDownloader/src/.**   
+Well not everything actually, you already have installed docker and setup the container. So depending on the update, might not need to rebuild the docker container.  
+**Be aware that the following steps might (normally should not) overwrite your data. If you don't want to lose it, make a backup of ytMusicDownloader.db and of configuration.json from ~/qmk/YtMusicDownloader/src/.**   
 > 1. Go to project folder: `cd ~/qmk/YtMusicDownloader`  
 > 2. Update the project from GitHub: `git pull`  
 > 3. Restart your container: `sudo docker restart container qmk_ymd`  
