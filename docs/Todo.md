@@ -6,4 +6,3 @@
 # Version 1.1
 - Clean code (use object for database, etc)
 - Create tests
-- Add possibility to set a user to change owner of downloaded files (chown)
