@@ -49,7 +49,7 @@ Display configuration
 ```json
 {
     "version": "0.1", 
-    "user": "qmk", 
+    "use_custom_user": "false",
     "naming_format": {
         "separator": " - ", 
         "artist_before_title": "true"
@@ -61,7 +61,7 @@ Display configuration
 *Body*  
 ```json
 {
-    "user": "qmk"
+    "use_custom_user": "true"
 }
 ```
 *Response*  
@@ -69,7 +69,7 @@ Display configuration
 ```json
 {
     "version": "0.1", 
-    "user": "qmk", 
+    "use_custom_user": "true",
     "naming_format": {
         "separator": " - ", 
         "artist_before_title": "true"
@@ -90,7 +90,7 @@ Display configuration
 ```json
 {
     "version": "0.1", 
-    "user": "qmk", 
+    "use_custom_user": "false",
     "naming_format": {
         "separator": " - ", 
         "artist_before_title": "true"

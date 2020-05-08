@@ -33,7 +33,15 @@ You can of course do this manually if you prefer: Download zip file form github 
 > Run the command `git clone https://github.com/hQamonky/YtMusicDownloader.git`   
 > You can do this manually if you prefer: Download zip file form github and unzip it into C:\\Program Files\qmk\.  
 ## 3. Build the docker image
-Run the command: `sudo docker build --no-cache -t qmk_yt_music_dl:0.1 ~/qmk/YtMusicDownloader`  
+Before actually building the image, you should edit the Dockerfile. So open it: `gedit ~/qmk/YtMusicDownloader/Dockerfile`  
+You'll see a line that says `RUN adduser -DH -u 1000 qmk 1000`. This is useful in order to access the files that are being downloaded, without the need of entering a root password.  
+Here you have 2 options:
+1. Find your current user id and group id and replace the two 1000s in the Dockerfile with your own ids (the first 1000 is the user id and the last is the group id)  
+2. Don't bother with the Dockerfile but you'll have to call the /configuration/user endpoint and set `use_custom_user="false"`
+
+It is most likely that your user id and group id are 1000. But to check that out, run the `id` command in the terminal (for windows users, google it).  
+***Note: Do not change anything else in the adduser command, especially "qmk"!***  
+Finally, build the image: `sudo docker build --no-cache -t qmk_yt_music_dl:0.1 ~/qmk/YtMusicDownloader`  
 For noob... erhum.. I mean Windows users, replace `~/qmk/YtMusicDownloader` by `C:\\Program Files\qmk\YtMusicDownloader`.  
 ## 4. Run the image to create a container
 Use the command:  
@@ -70,8 +78,9 @@ Well not everything actually, you already have installed docker and setup the co
 If this works, you're good and you don't need to go any further.  
 If it doesn't it means that you have to rebuild the docker container and do a "full update". So continue with the following steps.  
 > 4. Remove the docker container: `sudo docker container rm -f qmk_ymd`  
-> 5. Build the image: `sudo docker build --no-cache -t qmk_yt_music_dl:0.1 ~/qmk/YtMusicDownloader` (*you can omit the --no-cache flag to go faster, but consider that it might cause problems*)  
-> 6. Run the image: `sudo docker run -p 8092:8080 -v ~/qmk/YtMusicDownloader:/usr/src/app -v ~/Music:/Music -d --name qmk_ymd qmk_yt_music_dl`  
+> 5. If needed, edit the Dockerfile and enter your user id and group id: `gedit ~/qmk/YtMusicDownloader/Dockerfile`  
+> 6. Build the image: `sudo docker build --no-cache -t qmk_yt_music_dl:0.1 ~/qmk/YtMusicDownloader` (*you can omit the --no-cache flag to go faster, but consider that it might cause problems*)  
+> 7. Run the image: `sudo docker run -p 8092:8080 -v ~/qmk/YtMusicDownloader:/usr/src/app -v ~/Music:/Music -d --name qmk_ymd qmk_yt_music_dl`  
 # Go a little further
 I suggest that you create shortcuts to handle the docker commands.  
 ## Linux (might also work on Mac OS)
@@ -99,6 +108,7 @@ docker container rm -f qmk_ymd
 docker build --no-cache -t qmk_yt_music_dl:0.1 ~/qmk/YtMusicDownloader
 docker run -p 8092:8080 -v ~/qmk/YtMusicDownloader:/usr/src/app -v ~/Music:/Music -d --name qmk_ymd qmk_yt_music_dl
 ```
+Don't forget to add a command in the script to edit the Dockerfile if you need to!  
 Save and exit.  
 Make the file executable: `sudo chmod +x ~/qmk/YtMusicDownloader/full_update.sh`  
 To run the script: `sudo ~/qmk/YtMusicDownloader/full_update.sh`  

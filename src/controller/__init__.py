@@ -9,6 +9,9 @@ from mutagen.easyid3 import EasyID3
 
 
 class Controller:
+
+    # Configuration ----------------------------------------------------------------------------------------------------
+
     @staticmethod
     def get_configuration():
         # Get configuration file
@@ -28,14 +31,26 @@ class Controller:
         return config
 
     @staticmethod
-    def update_config_user(args):
+    def update_config_user(use_custom_user):
+        return Controller.set_use_custom_user(use_custom_user)
+
+    @staticmethod
+    def set_use_custom_user(use):
         # Get configuration file
         with open('./src/configuration.json') as json_file:
             config = json.load(json_file)
-        config['user'] = args.user
+        config['use_custom_user'] = use
         with open('./src/configuration.json', 'w') as outfile:
             json.dump(config, outfile)
         return config
+
+    @staticmethod
+    def get_use_custom_user():
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        return config['use_custom_user']
+
+    # Database ---------------------------------------------------------------------------------------------------------
 
     @staticmethod
     def clear_database():
@@ -46,7 +61,7 @@ class Controller:
     def factory_reset():
         config = {
             "version": "0.1",
-            "user": "",
+            "use_custom_user": "true",
             "naming_format": {
                 "separator": " - ",
                 "artist_before_title": "true"
@@ -191,9 +206,9 @@ class Controller:
                 # Prepare output folder
                 output_folder = r'' + db_playlist['folder']
                 os.makedirs(output_folder, exist_ok=True)
-                user = Controller.get_user_from_config()
-                if user is not None and user != "":
-                    subprocess.run(["chown", user, output_folder],
+                use_custom_user = Controller.get_use_custom_user()
+                if use_custom_user == "true":
+                    subprocess.run(["chown", "qmk", output_folder],
                                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 else:
                     subprocess.run(["chmod", "755", output_folder],
@@ -203,8 +218,8 @@ class Controller:
                                          output_folder + '/' + yt_video_info['title'] + ".webm")
                 # Set permissions to downloaded file
                 file = output_folder + '/' + yt_video_info['title'] + '.mp3'
-                if user is not None and user != "":
-                    subprocess.run(["chown", user, file],
+                if use_custom_user == "true":
+                    subprocess.run(["chown", "qmk", file],
                                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 else:
                     subprocess.run(["chmod", "644", file],
@@ -215,7 +230,7 @@ class Controller:
                 # Insert Music in database
                 # Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
                 #                    yt_video_info['upload_date'])
-                Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'])
+                Database.new_music(playlist_id, video['id'], video['title'] + '.mp3', title, artist, channel['channel'])
                 # Add entry to Playlist_Music table
                 log['downloaded'].append({
                     'id': video['id'],
@@ -231,10 +246,6 @@ class Controller:
                 log['skipped'].append(video['id'])
 
         return log
-
-    # @staticmethod
-    # def prepare_music_info():
-
 
     # Music ------------------------------------------------------------------------------------------------------------
 
@@ -342,9 +353,3 @@ class Controller:
             EasyID3.RegisterTextKey("comment", "COMM")
             tag['comment'] = comment
         tag.save(v2_version=3)
-
-    @staticmethod
-    def get_user_from_config():
-        with open('./src/configuration.json') as json_file:
-            config = json.load(json_file)
-        return config['user']

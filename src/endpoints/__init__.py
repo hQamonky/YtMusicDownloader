@@ -55,9 +55,9 @@ class ConfigUser(Resource):
     @staticmethod
     def post():
         parser = reqparse.RequestParser()
-        parser.add_argument('user', required=True)
+        parser.add_argument('use_custom_user', required=True)
         args = parser.parse_args()
-        return {'message': 'Success', 'data': Controller.update_config_user(args)}, 200
+        return {'message': 'Success', 'data': Controller.update_config_user(args.use_custom_user)}, 200
 
 
 class ConfigNamingFormat(Resource):
