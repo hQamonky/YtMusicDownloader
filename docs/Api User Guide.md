@@ -15,6 +15,21 @@ Manage, through this API, a daemon that automatically downloads music from YouTu
     - Strings replace (ex: replace " [Official Music Video]" by "")
     - Set title/artist format to apply depending on channel on channel
     - Set title/artist default format to apply
+## List of endpoints
+- `/`
+- `/configure`
+- `/configuration/user`
+- `/configuration/naming-format`
+- `/factory-reset`
+- `/playlists`
+- `/playlist/<identifier>`
+- `/playlist/<playlist_id>/download`
+- `/music/new`
+- `/music/<identifier>`
+- `/naming-rules`
+- `/naming-rule/<identifier>`
+- `/channels`
+- `/channel/<identifier>`
 ## Usage
 All requests will have the `Application/json` header.  
 All `POST` requests will take a `json` as a body.  
@@ -95,12 +110,12 @@ Reset configuration and database to default.
         "id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
         "name": "Best of Willy tracks 2020 part 2",
         "uploader": "William Herlicq",
-        "folder": "/home/qmk/Music/Best of WillyTracks"
+        "folder": "/Music/Best of WillyTracks"
     },{
         "id": "PLCVGGn6GhhDtHxCJcPNymXhCtyEisxERY",
         "name": "Best of Chill Music",
         "uploader": "William Herlicq",
-        "folder": "/home/qmk/Music/Chill"
+        "folder": "/Music/Chill"
     }
 ]
 ```
@@ -109,9 +124,10 @@ Reset configuration and database to default.
 ```json
 {
     "url": "https://www.youtube.com/playlist?list=PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
-    "folder": "/home/qmk/Music/Best of WillyTracks"
+    "folder": "/Music/Best of WillyTracks"
 }
 ```
+**Note that the root of the folder (here /Music) must be the one that was configured during the docker run command of the setup!**
 *Response*  
 - `201 Created` on success  
 ```json
@@ -119,7 +135,7 @@ Reset configuration and database to default.
     "id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
     "name": "Best of Willy tracks 2020 part 2",
     "uploader": "William Herlicq",
-    "folder": "/home/qmk/Music/Best of WillyTracks"
+    "folder": "/Music/Best of WillyTracks"
 }
 ```
 ## `/playlist/<identifier>`
@@ -127,7 +143,7 @@ Reset configuration and database to default.
 *Body*  
 ```json
 {
-    "folder": "/home/qmk/Music/Best of WillyTracks"
+    "folder": "/Music/Best of WillyTracks"
 }
 ```
 *Response*  
@@ -138,7 +154,7 @@ Reset configuration and database to default.
     "title": "Best of Willy tracks 2020 part 2",
     "uploader": "William Herlicq",
     "uploader_id": "UCT8Y-bugDyR4ADHoQ-FOluw",
-    "folder": "/home/qmk/Music/Best of WillyTracks"
+    "folder": "/Music/Best of WillyTracks"
 }
 ```
 ### `DELETE`
@@ -210,7 +226,7 @@ Returns list of "not seen" music.
         "artist": "Bad Computer",
         "channel": "Monstercat: Uncaged",
         "upload_date": "13/04/2020",
-        "folders": ["/home/qmk/Music/Best of WillyTracks/"],
+        "folders": ["/Music/Best of WillyTracks/"],
         "new": "true"
     },
     {
@@ -220,7 +236,7 @@ Returns list of "not seen" music.
         "artist": "Netrum",
         "channel": "NoCopyrightSounds",
         "upload_date": "14/04/2020",
-        "folder": "/home/qmk/Music/Best of WillyTracks/",
+        "folder": "/Music/Best of WillyTracks/",
         "new": "true"
     }
 ]
@@ -247,7 +263,7 @@ Returns list of "not seen" music.
     "artist": "Bad Computer",
     "channel": "Monstercat: Uncaged",
     "upload_date": "13/04/2020",
-    "folder": "/home/qmk/Music/Best of WillyTracks/",
+    "folder": "/Music/Best of WillyTracks/",
     "new": "false"
 }
 ```

@@ -1,11 +1,23 @@
 # YtMusicDownloader
 YtMusicDownloader is a python service that downloads music from YouTube automatically. Service is manageable through an integrated API.  
 YtMusicDownloader uses youtube-dl to download files. Shout-outs to them and [here](https://ytdl-org.github.io/youtube-dl/) is their website.  
-To see features and usage of the API, refer to ["YtMusicDownloader/docs/API User Guide.md"](https://github.com/hQamonky/YtMusicDownloader/blob/master/docs/Api%20User%20Guide.md). this document is also available on "/" once the web server is running. 
+To see features and usage of the API, refer to ["YtMusicDownloader/docs/API User Guide.md"](https://github.com/hQamonky/YtMusicDownloader/blob/master/docs/Api%20User%20Guide.md). this document is also available on "/" once the web server is running.  
+The project integrates docker and the simplest way to use it is to clone the whole project and use docker. This guide will go over on how to do this, but you can refer to the [docker documentation](https://docs.docker.com/) for any problems or if you want to configure more advanced stuff yourself.
 # Installation
-Requirement: This app is wrapped in a docker container, and so you have to use docker.  
-## Linux (debian based)
-### 1. Download the project from Github
+## 1. Install Docker
+### Linux (debian based)
+> 1. Update your system  
+> `sudo apt update`  
+> 2. Install requirements  
+> `sudo apt install apt-transport-https ca-certificates curl software-properties-common`  
+> 3. Install Docker package  
+> `sudo snap install docker`  
+>
+If snap is not installed, install it with `sudo apt install snapd`.  
+### Mac OS and Windows 10
+Follow the [docker documentation](https://docs.docker.com/).
+## 2. Download the project from Github
+### Linux and Mac OS
 > 1. Create a folder  
 > `sudo mkdir /opt/qmk`
 > 2. Go to the folder location  
@@ -14,70 +26,74 @@ Requirement: This app is wrapped in a docker container, and so you have to use d
 > `git clone https://github.com/hQamonky/YtMusicDownloader.git`
 >  
 You can of course do this manually if you prefer: Download zip file form github and unzip it into `/opt/qmk`.  
-### 2. Install Docker
-> 1. In update system  
-> `sudo apt update`  
-> 2. Install requirements  
-> `sudo apt install apt-transport-https ca-certificates curl software-properties-common`  
-> 3. Install Docker package  
-> `sudo snap install docker`  
->
-If snap is not installed, install it with `sudo apt install snapd`.  
-### 3. Load the docker image
-`sudo docker load < /opt/YtMusicDownloader/qmk_yt_music_dl_v1.0.tar`  
-## Mac OS and Newbies (Windows 10)
-### 1. Download the project from Github
-Create a folder where you want the program to run (typically /opt/qmk on Mac OS and C:\\Program Files\qmk on Windows).  
-Download the project from [GitHub](https://github.com/hQamonky/YtMusicDownloader/archive/master.zip) and extract the zip file in the folder you just created.  
-### 2. Install Docker
-Follow the [docker documentation](https://docs.docker.com/).
-### 3. Load the docker image
-Open a terminal at the location of your folder and run:  
-`docker load < YtMusicDownloader/qmk_yt_music_dl_v1.0.tar`  
-# Usage
-In this part, there are only docker commands and it is by consequence the same regardless of the OS.  
-The only difference is that on Linux you have to run them as sudo, but on other systems you don't.
-## Start the program
+### Windoesn't 10
+> 1. Open the file explorer and go to C:\\Program Files\.  
+> Create a folder names "qmk".  
+> 2. Open the folder and do a "Shift+Right Click" -> "Open PowerShell window here".  
+> Run the command `git clone https://github.com/hQamonky/YtMusicDownloader.git`   
+> You can do this manually if you prefer: Download zip file form github and unzip it into C:\\Program Files\qmk\.  
+## 3. Build the docker image
+Run the command: `sudo docker build --no-cache -t qmk_yt_music_dl:0.1 /opt/qmk/YtMusicDownloader`  
+For noob... erhum.. I mean Windows users, replace `/opt/qmk/YtMusicDownloader` by `C:\\Program Files\qmk\YtMusicDownloader`.  
+## 4. Run the image to create a container
 Use the command:  
-`sudo docker run -p 8092:8080 -v /opt/YtMusicDownloader:/usr/src/app -v /home/qmk/Music:/Music -d --name qmk_yt_music_dl qmk_yt_music_dl:latest`  
+`sudo docker run -p 8092:8080 -v /opt/YtMusicDownloader:/usr/src/app -v /path/to/my/Music:/Music -d --name qmk_ymd qmk_yt_music_dl:0.1`  
 Here you can customize this command if you want:  
-- `8092` is the port you will be using to access the API.  
-- `-v` enables the docker container to access a folder on the host machine.  
-    - `-v /opt/YtMusicDownloader:/usr/src/app` is required and cannot be changed.  
-    - `-v /home/qmk/Music:/Music` however can be used to set a folder where you want the app to output the downloads. You can even add more folders if you want.  
-- The `-d` option makes the container run in the background and it gives you the id of the container.  
-You can omit this option if you want to run the app in the foreground.  
-- The `--name qmk_ytmusicdl` option gives a name to the container. It is optional but useful because we can use the name instead of the id of the container for the following commands.   
+> - `8092` is the port you will be using to access the API.  
+> - `-v` enables the docker container to access a folder on the host machine.  
+>     - `-v /opt/YtMusicDownloader:/usr/src/app` is required and cannot be changed.  
+>     - `-v /path/to/my/Music:/Music` **Here you have to change to the path that you want!**  
+>     This option can be used to set a folder where you want the app to output the downloads. You can also add more folders with more -v flags if you want.    
+> - The `-d` option makes the container run in the background and it gives you the id of the container.  
+> You can omit this option if you want to run the app in the foreground.  
+> - The `--name qmk_ymd` option gives a name to the container, you can name it whatever you want. It is optional but we will use it for starting and stopping the container.
+  
+Once you have executed this command, the container will be started. Stop it with `sudo docker stop qmk_ymd`.
+# Usage
+## Start the program   
+Simply run: `sudo docker start qmk_ymd`
 ## Stop the  program
-First you need to get the id of the container that is currently running. If you wrote down the id given by the previous command, you can use it. Or, if you gave it a name, you can use the name instead. Otherwise here's how to get it back:  
-`sudo docker ps`  
-This command lists the running docker containers.  
-In the ID column is where you will find what we need.  
+Just run `sudo docker stop qmk_ymd`.  
+If you have any problem, like you don't remember the name you gave it or something, here's how to deal with it.  
+First display the information of the running containers with `sudo docker ps`.   
+Write down the container id or the name of your container.  
 Then stop the container with:  
 `sudo docker stop container_id` (replace *container_id* with the id (or name) you just retrieved)  
+You can also use the `docker kill` command, refer to the docker documentation for more information on that.  
 # Update
 Unfortunately, there is no "simple" update process, you basically have to do the whole installation process again :)  
 Well not everything actually, you already have installed docker, so you just have to:  
-> 1. Download latest version from GitHub: `cd /opt/qmk && git clone https://github.com/hQamonky/YtMusicDownloader.git`
-> 2. Load the docker image with `sudo docker load < /opt/YtMusicDownloader/qmk_yt_music_dl_v1.0.tar`  
-> 
-Then use the new image the same way as previously described (with `run` and `stop` commands).  
+> 1. Download latest version from GitHub: `cd /opt/qmk && git clone https://github.com/hQamonky/YtMusicDownloader.git`  
+> 2. Remove the container: `sudo docker container rm qmk_ymd`  
+> 3. Build the docker image: `sudo docker build --no-cache -t qmk_yt_music_dl:0.1 /opt/qmk/YtMusicDownloader` (you can omit the --no-cache flag to go faster, but might run into problems)    
+> 4. Run the container: `sudo docker run -p 8092:8080 -v /opt/YtMusicDownloader:/usr/src/app -v /path/to/my/Music:/Music -d --name qmk_ymd qmk_yt_music_dl:latest`  
+Then use the new container the same way as previously described (with `start` and `stop` commands).  
 # Go a little further
-I suggest that you create shortcuts to handle the docker commands.
+I suggest that you create shortcuts to handle the docker commands.  
 ## Linux (debian based)
+### Create an update script
+Create `sudo gedit /opt/qmk/YtMusicDownloader/update.sh`  
+``` bash
+#!/bin/sh
+
+cd /opt/qmk
+git clone https://github.com/hQamonky/YtMusicDownloader.git
+docker container rm qmk_ymd
+docker build --no-cache -t qmk_yt_music_dl:0.1 /opt/qmk/YtMusicDownloader
+docker run -p 8092:8080 -v /opt/YtMusicDownloader:/usr/src/app -v /path/to/my/Music:/Music -d --name qmk_ymd qmk_yt_music_dl:0.1
+```
+Save and exit.  
+Make the file executable: `sudo chmod +x /opt/qmk/YtMusicDownloader/update.sh`  
+To run the script: `sudo /opt/qmk/YtMusicDownloader/update.sh`  
 ### Create aliases
-Create file `gedit ~/.bash_aliases` and insert the following:
+Create file `gedit ~/.bash_aliases` and insert the following:  
 ``` bash
 # qmk software
-alias ytmusicdl-start="sudo docker run -p 8092:8080 -v /opt/YtMusicDownloader:/usr/src/app -v /home/qmk/Music:/Music -d --name qmk_yt_music_dl qmk_yt_music_dl:latest"  
-alias ytmusicdl-stop="sudo docker stop qmk_yt_music_dl"  
+alias ymd-st="sudo docker start qmk_ymd"  
+alias ymd-sp="sudo docker stop qmk_ymd"  
+alias ymd-u="sudo /opt/qmk/YtMusicDownloader/update.sh"  
 ```
 Apply your changes with `source ~/.bash_aliases`.  
-### Make system not ask for sudo password
-Edit the file `sudo gedit /etc/sudoers` and add the following line at the end of the file:  
-``` bash
-qmk ALL=(ALL:ALL) NOPASSWD:/snap/bin/docker
-```
 ### Create desktop launcher
 Create file `sudo gedit /usr/share/applications/qmk_yt_music_downloader.desktop` and insert the following:  
 ``` bash
@@ -86,11 +102,20 @@ Version = 1.0
 Type = Application  
 Terminal = false  
 Name = QMK YT Music Downloader  
-Exec = ytmusicdl-start %f  
+Exec = sudo docker start qmk_ymd %f  
 Icon = /opt/YtMusicDownloader/icon.png  
 Categories = Application;  
 ```
-Create an icon and rename/copy it to `/opt/YtMusicDownloader/icon.png`.  
 If you want to have a terminal open when running the app, remove the `%f` on the "Exec" line.  
+For this launcher to work, it is required to make the system not ask for sudo password.  
+Edit the file `sudo gedit /etc/sudoers` and add the following line at the end of the file:  
+``` bash
+qmk ALL=(ALL:ALL) NOPASSWD:/snap/bin/docker
+```
+*Note: you have to replace "qmk" with your own username.*  
+Create an icon and rename/copy it to `/opt/YtMusicDownloader/icon.png`.  
 Apply changes with `sudo update-desktop-database`.  
-You could also create a stop launcher if you want. I mean, be creative, do whatever.   
+You could also create a stop or update launcher if you want. I mean, be creative, do whatever.   
+### Make program run at startup
+There are several ways to do this: use cron, use the "Startup Applications" program, etc.  
+I'll let you google this if you want, I'm just laying this here as a suggestion.  
