@@ -132,8 +132,6 @@ class Controller:
                 # Get video info from youtube
                 # yt_video_info = YoutubeDl.get_video_info(YoutubeDl.video_url() + video['id'])
                 yt_video_info = YoutubeDl.get_video_info_without_ytdl(YoutubeDl.video_url() + video['id'])
-                # Download video
-                YoutubeDl.download_music(YoutubeDl.video_url() + video['id'], "./" + video['id'] + ".webm")
                 # Get channel info from database
                 # channel = Database.get_channel(yt_video_info['uploader'])
                 channel = Database.get_channel(yt_video_info['author_name'])
@@ -190,10 +188,22 @@ class Controller:
                 # Set comment
                 comment = '{\"platform\": \"youtube\", \"id\": \"' + video['id'] + '\"}'
                 print('Comment : ' + comment)
-                # Set permissions to downloaded file
-                file = r'./' + video['id'] + '.mp3'
+                # Prepare output folder
+                output_folder = r'' + db_playlist['folder']
+                os.makedirs(output_folder, exist_ok=True)
                 user = Controller.get_user_from_config()
-                if user is not None:
+                if user is not None and user != "":
+                    subprocess.run(["chown", user, output_folder],
+                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                else:
+                    subprocess.run(["chmod", "755", output_folder],
+                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                # Download video
+                YoutubeDl.download_music(YoutubeDl.video_url() + video['id'],
+                                         output_folder + '/' + yt_video_info['title'] + ".webm")
+                # Set permissions to downloaded file
+                file = output_folder + '/' + yt_video_info['title'] + '.mp3'
+                if user is not None and user != "":
                     subprocess.run(["chown", user, file],
                                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 else:
@@ -202,16 +212,6 @@ class Controller:
                 # Set metadata tags
                 # Controller.set_id3_tags(file, title, artist, album, year, comment)
                 Controller.set_id3_tags(file, title, artist, album, comment)
-                # Rename and move file to output playlist folder
-                output_folder = r'' + db_playlist['folder']
-                os.makedirs(output_folder, exist_ok=True)
-                if user is not None:
-                    subprocess.run(["chown", user, output_folder],
-                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
-                else:
-                    subprocess.run(["chmod", "755", output_folder],
-                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
-                os.rename(file, output_folder + '/' + yt_video_info['title'] + '.mp3')
                 # Insert Music in database
                 # Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
                 #                    yt_video_info['upload_date'])
@@ -231,6 +231,10 @@ class Controller:
                 log['skipped'].append(video['id'])
 
         return log
+
+    # @staticmethod
+    # def prepare_music_info():
+
 
     # Music ------------------------------------------------------------------------------------------------------------
 

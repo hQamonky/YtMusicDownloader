@@ -152,7 +152,8 @@ class Database:
     def new_music(id_playlist, id_music, name, title, artist, channel):
         connection = Database.connect()
         c = connection.cursor()
-        Music.insert(c, id_music, name, title, artist, channel, upload_date)
+        # Music.insert(c, id_music, name, title, artist, channel, upload_date)
+        Music.insert(c, id_music, name, title, artist, channel)
         PlaylistMusic.insert(c, id_playlist, id_music)
         Database.close(connection)
         return "Music added"
