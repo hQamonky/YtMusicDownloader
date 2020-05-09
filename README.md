@@ -86,7 +86,7 @@ I suggest that you create shortcuts to handle the docker commands.
 ## Linux (might also work on Mac OS)
 ### Create update scripts
 #### Basic update
-Create `sudo gedit ~/qmk/YtMusicDownloader/basic_update.sh`  
+Create `gedit ~/qmk/YtMusicDownloader/basic_update.sh`  
 ``` bash
 #!/bin/sh
 
@@ -98,7 +98,7 @@ Save and exit.
 Make the file executable: `sudo chmod +x ~/qmk/YtMusicDownloader/basic_update.sh`  
 To run the script: `sudo ~/qmk/YtMusicDownloader/basic_update.sh`  
 #### Full update
-Create `sudo gedit ~/qmk/YtMusicDownloader/full_update.sh`  
+Create `gedit ~/qmk/YtMusicDownloader/full_update.sh`  
 ``` bash
 #!/bin/sh
 
