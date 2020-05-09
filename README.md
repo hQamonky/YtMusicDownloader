@@ -79,7 +79,7 @@ If this works, you're good and you don't need to go any further.
 If it doesn't it means that you have to rebuild the docker container and do a "full update". So continue with the following steps.  
 > 4. Remove the docker container: `sudo docker container rm -f qmk_ymd`  
 > 5. If needed, edit the Dockerfile and enter your user id and group id: `gedit ~/qmk/YtMusicDownloader/Dockerfile`  
-> 6. Build the image: `sudo docker build --no-cache -t qmk_yt_music_dl:1.0 ~/qmk/YtMusicDownloader` (*you can omit the --no-cache flag to go faster, but consider that it might cause problems*)  
+> 6. Build the image: `sudo docker build --no-cache -t qmk_yt_music_dl:latest ~/qmk/YtMusicDownloader` (*you can omit the --no-cache flag to go faster, but consider that it might cause problems*)  
 > 7. Run the image: `sudo docker run -p 8092:8080 -v ~/qmk/YtMusicDownloader:/usr/src/app -v ~/Music:/Music -d --name qmk_ymd qmk_yt_music_dl`  
 # Go a little further
 I suggest that you create shortcuts to handle the docker commands.  
@@ -105,7 +105,7 @@ Create `gedit ~/qmk/YtMusicDownloader/full_update.sh`
 cd ~/qmk/YtMusicDownloader
 git pull
 docker container rm -f qmk_ymd
-docker build --no-cache -t qmk_yt_music_dl:0.1 ~/qmk/YtMusicDownloader
+docker build --no-cache -t qmk_yt_music_dl:latest ~/qmk/YtMusicDownloader
 docker run -p 8092:8080 -v ~/qmk/YtMusicDownloader:/usr/src/app -v ~/Music:/Music -d --name qmk_ymd qmk_yt_music_dl
 ```
 Don't forget to add a command in the script to edit the Dockerfile if you need to!  
