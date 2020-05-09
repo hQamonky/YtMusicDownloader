@@ -20,6 +20,21 @@ class Controller:
         return config
 
     @staticmethod
+    def set_download_interval(time):
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        config['download_interval'] = time
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        return config
+
+    @staticmethod
+    def get_download_interval():
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        return int(config['download_interval'])
+
+    @staticmethod
     def update_config_naming_format(args):
         # Get configuration file
         with open('./src/configuration.json') as json_file:
@@ -61,6 +76,7 @@ class Controller:
     def factory_reset():
         config = {
             "version": "0.1",
+            "download_interval": "12",
             "use_custom_user": "true",
             "naming_format": {
                 "separator": " - ",
@@ -113,6 +129,14 @@ class Controller:
     def delete_playlist(identifier):
         Database.delete_playlist(identifier)
         return "OK"
+
+    @staticmethod
+    def download_playlists():
+        playlists = Database.get_playlists()
+        logs = []
+        for playlist in playlists:
+            logs.append(Controller.download_playlist(playlist['id']))
+        return logs
 
     @staticmethod
     def download_playlist(playlist_id):

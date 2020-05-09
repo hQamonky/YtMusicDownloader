@@ -1,11 +1,35 @@
 import markdown
 import os
-import shelve
+import atexit
 
 # Import the framework
-from flask import Flask, g, json
+from flask import Flask
 from flask_restful import Resource, Api, reqparse
 from src.controller import Controller
+from apscheduler.schedulers.background import BackgroundScheduler
+
+
+def add_job_to_scheduler(interval):
+    scheduler.add_job(func=Controller.download_playlists,
+                      trigger="interval", hours=interval, id='download_playlists')
+
+
+def start_scheduler(interval):
+    if interval != -1:
+        add_job_to_scheduler(interval)
+        scheduler.start()
+
+
+def restart_scheduler(interval):
+    scheduler.remove_job('download_playlists')
+    if interval != -1:
+        add_job_to_scheduler(interval)
+
+
+scheduler = BackgroundScheduler()
+start_scheduler(Controller.get_download_interval())
+# Shut down the scheduler when exiting the app
+atexit.register(lambda: scheduler.shutdown())
 
 # Create an instance of Flask
 app = Flask(__name__)
@@ -13,30 +37,27 @@ app = Flask(__name__)
 api = Api(app)
 
 
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = shelve.open("ytdl.db")
-    return db
-
-
-@app.teardown_appcontext
-def teardown_db(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
-
-
-# Route shows the README file.
+# Route shows the user guide file.
 @app.route('/')
 def index():
-    # Open README file
-    # return "Hello world !"
+    # Open file
     with open(os.path.dirname(app.root_path) + "/../docs/Api User Guide.md", 'r') as markdown_file:
         # Read the content of the file
         content = markdown_file.read()
         # Convert to HTML
         return markdown.markdown(content)
+
+
+class AutoDownload(Resource):
+    @staticmethod
+    def post():
+        parser = reqparse.RequestParser()
+        parser.add_argument('interval', required=True)
+        args = parser.parse_args()
+        result = Controller.set_download_interval(args.interval)
+        # Restart job with updated interval
+        restart_scheduler(int(args.interval))
+        return {'message': 'Success', 'data': result}, 201
 
 
 class FactoryReset(Resource):
@@ -87,6 +108,12 @@ class Playlists(Resource):
         args = parser.parse_args()
 
         return {'message': 'Playlist has been added', 'data': Controller.new_playlist(args)}, 201
+
+
+class DownloadPlaylists(Resource):
+    @staticmethod
+    def post():
+        return {'message': 'Success', 'data': Controller.download_playlists()}, 201
 
 
 class Playlist(Resource):
@@ -213,8 +240,10 @@ api.add_resource(Config, '/configuration')
 api.add_resource(ConfigUser, '/configuration/user')
 api.add_resource(ConfigNamingFormat, '/configuration/naming-format')
 api.add_resource(FactoryReset, '/factory-reset')
+api.add_resource(AutoDownload, '/auto-download')
 # Playlists
 api.add_resource(Playlists, '/playlists')
+api.add_resource(DownloadPlaylists, '/playlists/download')
 api.add_resource(Playlist, '/playlist/<identifier>')
 api.add_resource(DownloadPlaylist, '/playlist/<playlist_id>/download')
 # Music

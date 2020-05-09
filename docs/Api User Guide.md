@@ -21,9 +21,11 @@ Manage, through this API, a daemon that automatically downloads music from YouTu
 - `/configuration/user`
 - `/configuration/naming-format`
 - `/factory-reset`
+- `/auto-download`
 - `/playlists`
+- `/playlists/download`
 - `/playlist/<identifier>`
-- `/playlist/<playlist_id>/download`
+- `/playlist/<identifier>/download`
 - `/music/new`
 - `/music/<identifier>`
 - `/naming-rules`
@@ -49,6 +51,7 @@ Display configuration
 ```json
 {
     "version": "0.1", 
+    "interval": "12",
     "use_custom_user": "false",
     "naming_format": {
         "separator": " - ", 
@@ -69,6 +72,7 @@ Display configuration
 ```json
 {
     "version": "0.1", 
+    "interval": "12",
     "use_custom_user": "true",
     "naming_format": {
         "separator": " - ", 
@@ -90,6 +94,7 @@ Display configuration
 ```json
 {
     "version": "0.1", 
+    "interval": "12",
     "use_custom_user": "false",
     "naming_format": {
         "separator": " - ", 
@@ -100,6 +105,29 @@ Display configuration
 ## `/factory-reset`
 ### `POST`  
 Reset configuration and database to default.
+## `/auto-download`
+### `POST`
+*Body*  
+Give an interval of time for when the service will automatically download all the playlists.  
+The interval is defined in hours and the default is 12. Set it at -1 to disable it.  
+```json
+{
+    "interval": "12"
+}
+```
+*Response*  
+- `201 Updated` on success  
+```json
+{
+    "version": "0.1", 
+    "interval": "12",
+    "use_custom_user": "false",
+    "naming_format": {
+        "separator": " - ", 
+        "artist_before_title": "true"
+    }
+}
+```
 ## `/playlists`
 ### `GET`  
 *Response*  
@@ -138,6 +166,12 @@ Reset configuration and database to default.
     "folder": "/Music/Best of WillyTracks"
 }
 ```
+## `/playlists/download`
+*Response*  
+### `POST`  
+Trigger download of all playlists.    
+*Response*  
+- `201 Downloaded` on success  
 ## `/playlist/<identifier>`
 ### `POST`  
 *Body*  
@@ -168,49 +202,6 @@ Reset configuration and database to default.
 Trigger download.  
 *Response*  
 - `201 Downloaded` on success  
-
-## `/download-occurrence`
-### `GET`  
-*Response*  
-- `200 OK` on success  
-Returns a list of times (of the day) when the download is triggered automatically. The time format is `HH:mm` (in 24h). Receiving an empty array means that the automatic download is disabled.
-Otherwise, the download is always triggered every day.
-```json
-[
-    {
-        "time": "00:00"
-    },{
-        "time": "12:00"
-    }
-]
-```
-
-### `POST`
-*Body*  
-Set a list of times (of the day) when you want the download to be triggered automatically.  
-The time format is `HH:mm` (in 24h).
-Sending an empty array will disable the automatic download.
-Otherwise, the download is always triggered every day and it cannot be changed.
-```json
-[
-    {
-        "time": "00:00"
-    },{
-        "time": "12:00"
-    }
-]
-```
-*Response*  
-- `201 Updated` on success  
-```json
-[
-    {
-        "time": "00:00"
-    },{
-        "time": "12:00"
-    }
-]
-```
 
 ## `/music/new`
 ### `GET`  
