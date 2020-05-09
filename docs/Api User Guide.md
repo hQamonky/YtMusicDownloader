@@ -5,7 +5,7 @@ Manage, through this API, a daemon that automatically downloads music from YouTu
     - Add/Remove playlists
     - Edit playlist download folder
     - Trigger playlist download
-- Set time/occurrence of automatic download
+- Set interval time between each automatic download
 - Handle newly downloaded music :
     - See list of downloaded music "not seen yet"
     - Rename music title and artist manually
@@ -13,8 +13,8 @@ Manage, through this API, a daemon that automatically downloads music from YouTu
 - Handle title and artist naming :
     - Add/Edit/Delete rules
     - Strings replace (ex: replace " [Official Music Video]" by "")
-    - Set title/artist format to apply depending on channel on channel
-    - Set title/artist default format to apply
+    - Set title/artist format to apply depending on channel 
+    - Set title/artist default format to apply for new channels
 ## List of endpoints
 - `/`
 - `/configure`
@@ -42,12 +42,13 @@ All responses will have the form :
     "message": "Description of what happened"
 }
 ```
-Subsequent response definitions will only detail the expected value of the `data field`.
+Subsequent response definitions will only detail the expected value of the `data field`.  
+Also, they will only define the responses of `GET` request. Post requests usually return the full json object that was modified.  
+
 ## `/configuration`
 ### `GET`  
-*Response* 
-Display configuration   
-- `200 OK` on success  
+Get the configuration file.  
+*Response*  
 ```json
 {
     "version": "0.1", 
@@ -59,29 +60,21 @@ Display configuration
     }
 }
 ```
+
 ## `/configuration/user`
 ### `POST`  
+Set if you want the downloaded files to be owned by the user that was set during the docker build.  
+If you set as false, the files will be owned by root, but will be readable and writable by everyone.  
 *Body*  
 ```json
 {
     "use_custom_user": "true"
 }
 ```
-*Response*  
-- `201 Updated` on success  
-```json
-{
-    "version": "0.1", 
-    "interval": "12",
-    "use_custom_user": "true",
-    "naming_format": {
-        "separator": " - ", 
-        "artist_before_title": "true"
-    }
-}
-```
+
 ## `/configuration/naming-format`
 ### `POST`  
+Set the default naming format for songs. The naming format is uses to determine the title and artist by using the name of the video.  
 *Body*  
 ```json
 {
@@ -89,49 +82,27 @@ Display configuration
     "artist_before_title": "true"
 }
 ```
-*Response*  
-- `201 Updated` on success  
-```json
-{
-    "version": "0.1", 
-    "interval": "12",
-    "use_custom_user": "false",
-    "naming_format": {
-        "separator": " - ", 
-        "artist_before_title": "true"
-    }
-}
-```
+
 ## `/factory-reset`
 ### `POST`  
-Reset configuration and database to default.
+Reset configuration and database to default.  
+
 ## `/auto-download`
-### `POST`
-*Body*  
+### `POST`  
 Give an interval of time for when the service will automatically download all the playlists.  
 The interval is defined in hours and the default is 12. Set it at -1 to disable it.  
+The first download will occur in an amount of time equal to the "interval" value, starting from the execution of this command.  
+*Body*  
 ```json
 {
     "interval": "12"
 }
 ```
-*Response*  
-- `201 Updated` on success  
-```json
-{
-    "version": "0.1", 
-    "interval": "12",
-    "use_custom_user": "false",
-    "naming_format": {
-        "separator": " - ", 
-        "artist_before_title": "true"
-    }
-}
-```
+
 ## `/playlists`
 ### `GET`  
+Get information on the registered playlists in the database.  
 *Response*  
-- `200 OK` on success  
 ```json
 [
     {
@@ -148,6 +119,8 @@ The interval is defined in hours and the default is 12. Set it at -1 to disable 
 ]
 ```
 ### `POST`  
+Register a playlist in the database.  
+**Note that the root of the folder (here /Music) must match with the one that was configured during the docker run command of the setup!**  
 *Body*  
 ```json
 {
@@ -155,59 +128,34 @@ The interval is defined in hours and the default is 12. Set it at -1 to disable 
     "folder": "/Music/Best of WillyTracks"
 }
 ```
-**Note that the root of the folder (here /Music) must be the one that was configured during the docker run command of the setup!**  
-*Response*  
-- `201 Created` on success  
-```json
-{
-    "id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
-    "name": "Best of Willy tracks 2020 part 2",
-    "uploader": "William Herlicq",
-    "folder": "/Music/Best of WillyTracks"
-}
-```
+
 ## `/playlists/download`
 *Response*  
 ### `POST`  
-Trigger download of all playlists.    
-*Response*  
-- `201 Downloaded` on success  
+Trigger download of all registered playlists.   
+
 ## `/playlist/<identifier>`
 ### `POST`  
+Edit the download output folder for a specific playlist.  
 *Body*  
 ```json
 {
     "folder": "/Music/Best of WillyTracks"
 }
 ```
-*Response*  
-- `201 Created` on success  
-```json
-{
-    "id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
-    "title": "Best of Willy tracks 2020 part 2",
-    "uploader": "William Herlicq",
-    "uploader_id": "UCT8Y-bugDyR4ADHoQ-FOluw",
-    "folder": "/Music/Best of WillyTracks"
-}
-```
 ### `DELETE`
-*Response*  
-- `404 Not found` if playlist does not exist
-- `200 OK` on success  
+Remove a registered playlist from the database. Downloaded files from this playlist are not touched.  
+If you re-register a removed playlist, it will re-download all the music (including those that were already downloaded).   
 
 ## `/playlist/<identifier>/download`
 *Response*  
 ### `POST`  
-Trigger download.  
-*Response*  
-- `201 Downloaded` on success  
+Trigger download of the specified playlist.  
 
 ## `/music/new`
 ### `GET`  
+Returns list of "not seen" music (where the "new" parameter equals "true").  
 *Response*  
-- `200 OK` on success  
-Returns list of "not seen" music.  
 ```json
 [
     {
@@ -232,38 +180,25 @@ Returns list of "not seen" music.
     }
 ]
 ```
+
 ## `/music/<identifier>`
 ### `POST`  
+- Rename a musics title and artist.  
+Not hat every parameter is required.  
 *Body*  
-- Rename a music.  
-- Set "new" attribute.  
 ```json
 {
     "title": "Riddle",
     "artist": "Bad Computer",
-    "new": "false"
-}
-```
-*Response*  
-- `201 Downloaded` on success  
-```json
-{
-    "id": "ftshNCG_RPk",
-    "file_name": "Bad Computer - Riddle [Monstercat Release]",
-    "title": "Riddle",
-    "artist": "Bad Computer",
-    "channel": "Monstercat: Uncaged",
-    "upload_date": "13/04/2020",
-    "folder": "/Music/Best of WillyTracks/",
     "new": "false"
 }
 ```
 
 ## `/naming-rules`
 ### `GET`  
+Returns the list of rules. These rules are applied in order to help to determine the title and artist from the name of the video.  
+It is useful to remove strings like " (Official Video)" or handle special characters.   
 *Response*  
-- `200 OK` on success  
-Returns list of rules.  
 ```json
 [
     {
@@ -288,22 +223,12 @@ Returns list of rules.
 ```
 ### `POST`
 *Body*  
-- List of rules with the following parameters :
-    - `replace` *(string to replace)*.
-    - `replace_by` *(new string that replaces old)*.
-    - `priority` *(in what order should the rules apply relatively to other rules, lowest number will apply first. Naming rules occur before naming format.)*
+Add a new rule with the following parameters :  
+    - `replace` *(string to replace)*.  
+    - `replace_by` *(new string that replaces old)*.  
+    - `priority` *(in what order should the rules apply relatively to other rules, lowest number will apply first. Naming rules occur before naming format.)*  
 ```json
 {
-    "replace": "‒",
-    "replace_by": "-",
-    "priority": "1"
-}
-```
-*Response*  
-- `201 Created` on success   
-```json
-{
-    "id": "0",
     "replace": "‒",
     "replace_by": "-",
     "priority": "1"
@@ -312,8 +237,8 @@ Returns list of rules.
 
 ## `/naming-rule/<identifier>`
 ### `GET`  
+Get the specified rule.
 *Response*  
-- `200 OK` on success   
 ```json
 {
     "replace": "‒",
@@ -322,6 +247,7 @@ Returns list of rules.
 }
 ```
 ### `POST`
+Edit the specified rule.  
 *Body*  
 ```json
 {
@@ -330,25 +256,14 @@ Returns list of rules.
     "priority": "1"
 }
 ```
-*Response*
-- `201 Updated` on success   
-```json
-{
-    "replace": "‒",
-    "replace_by": "-",
-    "priority": "1"
-}
-```
 ### `DELETE`
-*Response*  
-- `404 Not found` if rule does not exist
-- `200 OK` on success 
+Delete the specified rule.  
 
 ## `/channels`
 ### `GET`  
+Get the list of channels registered in the database. For each channel there is a naming format that applies.  
+The first time that a video is downloaded from a channel, the channel is automatically registered with the default naming rule defined in the configuration file (accessible and manageable through the /configuration.naming-rule endpoint).  
 *Response*  
-- `200 OK` on success  
-Returns list of channels with title/artist renaming format rules.  
 ```json
 [
     {
@@ -366,18 +281,9 @@ Returns list of channels with title/artist renaming format rules.
 ### `POST`
 *Body*  
 - List of rules with the following parameters :
-    - `channel` *(rule applies only if video comes from specified YT channel.)*.
-    - `separator` *(string that separates title and artist)*.
-    - `artist_before_title` *(`true` if artist name is before the title name in video name. Otherwise `false`)*.
-```json
-{
-    "channel": "Monstercat: Uncaged",
-    "separator": " - ",
-    "artist_before_title": "true"
-}
-```
-*Response*  
-- `201 Created` on success  
+    - `channel` *(rule applies only if video comes from specified YT channel)*
+    - `separator` *(string that separates title and artist)*
+    - `artist_before_title` *(`true` if artist name is before the title name in video name. Otherwise `false`)*
 ```json
 {
     "channel": "Monstercat: Uncaged",
@@ -388,8 +294,8 @@ Returns list of channels with title/artist renaming format rules.
 
 ## `/channel/<identifier>`
 ### `GET`  
+Get the specified channel.  
 *Response*  
-- `200 OK` on success  
 ```json
 {
     "channel": "Monstercat: Uncaged",
@@ -398,6 +304,7 @@ Returns list of channels with title/artist renaming format rules.
 }
 ```
 ### `POST`
+Edit the naming format for the specified channel.  
 *Body*  
 ```json
 {
@@ -405,16 +312,6 @@ Returns list of channels with title/artist renaming format rules.
     "artist_before_title": "true"
 }
 ```
-*Response*  
-- `201 Updated` on success  
-```json
-{
-    "channel": "Monstercat: Uncaged",
-    "separator": " - ",
-    "artist_before_title": "true"
-}
-```
 ### `DELETE`
-*Response*  
-- `404 Not found` if channel does not exist
-- `200 OK` on success 
+Remove a channel from the database.  
+
