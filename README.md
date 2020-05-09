@@ -41,11 +41,11 @@ Here you have 2 options:
 
 It is most likely that your user id and group id are 1000. But to check that out, run the `id` command in the terminal (for windows users, google it).  
 ***Note: Do not change anything else in the adduser command, especially "qmk"!***  
-Finally, build the image: `sudo docker build --no-cache -t qmk_yt_music_dl:0.1 ~/qmk/YtMusicDownloader`  
+Finally, build the image: `sudo docker build --no-cache -t qmk_yt_music_dl:1.0 ~/qmk/YtMusicDownloader`  
 For noob... erhum.. I mean Windows users, replace `~/qmk/YtMusicDownloader` by `C:\\Program Files\qmk\YtMusicDownloader`.  
 ## 4. Run the image to create a container
 Use the command:  
-`sudo docker run -p 8092:8080 -v ~/qmk/YtMusicDownloader:/usr/src/app -v ~/Music:/Music -d --name qmk_ymd qmk_yt_music_dl:0.1`  
+`sudo docker run -p 8092:8080 -v ~/qmk/YtMusicDownloader:/usr/src/app -v ~/Music:/Music -d --name qmk_ymd qmk_yt_music_dl:1.0`  
 Here you can customize this command if you want:  
 > - `8092` is the port you will be using to access the API.  
 > - `-v` enables the docker container to access a folder on the host machine.  
@@ -79,7 +79,7 @@ If this works, you're good and you don't need to go any further.
 If it doesn't it means that you have to rebuild the docker container and do a "full update". So continue with the following steps.  
 > 4. Remove the docker container: `sudo docker container rm -f qmk_ymd`  
 > 5. If needed, edit the Dockerfile and enter your user id and group id: `gedit ~/qmk/YtMusicDownloader/Dockerfile`  
-> 6. Build the image: `sudo docker build --no-cache -t qmk_yt_music_dl:0.1 ~/qmk/YtMusicDownloader` (*you can omit the --no-cache flag to go faster, but consider that it might cause problems*)  
+> 6. Build the image: `sudo docker build --no-cache -t qmk_yt_music_dl:1.0 ~/qmk/YtMusicDownloader` (*you can omit the --no-cache flag to go faster, but consider that it might cause problems*)  
 > 7. Run the image: `sudo docker run -p 8092:8080 -v ~/qmk/YtMusicDownloader:/usr/src/app -v ~/Music:/Music -d --name qmk_ymd qmk_yt_music_dl`  
 # Go a little further
 I suggest that you create shortcuts to handle the docker commands.  
