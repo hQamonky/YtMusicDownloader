@@ -174,6 +174,22 @@ class Database:
         Database.close(connection)
         return music
 
+    @staticmethod
+    def get_music(identifier):
+        connection = Database.connect()
+        c = connection.cursor()
+        playlists = Music.select_music(c, identifier)
+        Database.close(connection)
+        return playlists
+
+    @staticmethod
+    def get_music_playlists(id_music):
+        connection = Database.connect()
+        c = connection.cursor()
+        playlists = PlaylistMusic.select_music(c, id_music)
+        Database.close(connection)
+        return playlists
+
     # Naming Rules -----------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -315,6 +331,11 @@ class Music:
     @staticmethod
     def drop(cursor):
         cursor.execute("DROP TABLE IF EXISTS Music")
+
+    @staticmethod
+    def select_music(cursor, identifier):
+        cursor.execute("SELECT * FROM Music WHERE id = ?", identifier)
+        return cursor.fetchall()
 
     @staticmethod
     def select_new(cursor):

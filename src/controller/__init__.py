@@ -280,6 +280,16 @@ class Controller:
     @staticmethod
     def update_music(identifier, args):
         Database.update_music(identifier, args.title, args.artist, args.new)
+        # --  Update metadata
+        # Get file name
+        filename = Database.get_music(identifier)['name']
+        # Get file locations
+        playlists = Database.get_music_playlists(identifier)
+        for playlist in playlists:
+            path = Database.get_playlist(playlist['id_playlist'])['folder']
+            # Apply tags
+            Controller.set_id3_tags(path + '/' + filename, title, artist)
+
         return {
             "id": identifier,
             "title": args.title,
@@ -376,4 +386,18 @@ class Controller:
         if comment:
             EasyID3.RegisterTextKey("comment", "COMM")
             tag['comment'] = comment
+        tag.save(v2_version=3)
+
+    @staticmethod
+    # def set_id3_tags(file, title, artist, album, year, comment):
+    def set_id3_tags(file, title, artist):
+        try:
+            tag = EasyID3(file)
+        except:
+            tag = mutagen.File(file, easy=True)
+            tag.add_tags()
+        if title:
+            tag['title'] = title
+        if artist:
+            tag['artist'] = artist
         tag.save(v2_version=3)
