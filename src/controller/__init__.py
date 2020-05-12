@@ -288,7 +288,7 @@ class Controller:
         for playlist in playlists:
             path = Database.get_playlist(playlist['id_playlist'])['folder']
             # Apply tags
-            Controller.set_id3_tags(path + '/' + filename, args.title, args.artist)
+            Controller.update_id3_tags(path + '/' + filename, args.title, args.artist)
 
         return {
             "id": identifier,
@@ -390,7 +390,7 @@ class Controller:
 
     @staticmethod
     # def set_id3_tags(file, title, artist, album, year, comment):
-    def set_id3_tags(file, title, artist):
+    def update_id3_tags(file, title, artist):
         try:
             tag = EasyID3(file)
         except:
