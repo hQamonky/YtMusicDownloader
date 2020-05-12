@@ -282,11 +282,13 @@ class Controller:
         Database.update_music(identifier, args.title, args.artist, args.new)
         # --  Update metadata
         # Get file name
-        filename = Database.get_music(identifier)['name']
+        music = Database.get_music(identifier)
+        filename = music['name']
         # Get file locations
         playlists = Database.get_music_playlists(identifier)
         for playlist in playlists:
-            path = Database.get_playlist(playlist['id_playlist'])['folder']
+            playlist_info = Database.get_playlist(playlist['id_playlist'])
+            path = playlist_info['folder']
             # Apply tags
             Controller.update_id3_tags(path + '/' + filename, args.title, args.artist)
 
