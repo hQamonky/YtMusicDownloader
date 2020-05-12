@@ -178,9 +178,9 @@ class Database:
     def get_music(identifier):
         connection = Database.connect()
         c = connection.cursor()
-        playlists = Music.select_music(c, identifier)
+        music = Music.select_music(c, identifier)
         Database.close(connection)
-        return playlists
+        return music[0]
 
     @staticmethod
     def get_music_playlists(id_music):
