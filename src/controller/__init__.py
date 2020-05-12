@@ -288,7 +288,7 @@ class Controller:
         for playlist in playlists:
             path = Database.get_playlist(playlist['id_playlist'])['folder']
             # Apply tags
-            Controller.set_id3_tags(path + '/' + filename, title, artist)
+            Controller.set_id3_tags(path + '/' + filename, args.title, args.artist)
 
         return {
             "id": identifier,
