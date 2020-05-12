@@ -334,7 +334,7 @@ class Music:
 
     @staticmethod
     def select_music(cursor, identifier):
-        cursor.execute("SELECT * FROM Music WHERE id = ?", identifier)
+        cursor.execute("SELECT * FROM Music WHERE id = ?", (identifier,))
         return cursor.fetchall()
 
     @staticmethod
