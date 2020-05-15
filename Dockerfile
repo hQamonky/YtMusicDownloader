@@ -10,7 +10,9 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --upgrade youtube-dl
 
-RUN adduser -DH -u 1000 qmk 1000
+ARG user_id=1000
+ARG group_id=user_id
+RUN adduser -DH -u ${user_id} qmk ${user_id}
 
 COPY . .
 
