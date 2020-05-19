@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Edit Playlist</title>
+<h2>Edit Playlist</h2>
+<p>
+    id: {{ id }}<br/>
+    name: {{ name }}<br/>
+    uploader: {{ uploader }}
+</p>
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <dl>
+        {{ render_field(form.folder) }}
+    </dl>
+    <p><a href="{{ url_for('.ui_playlists') }}">Cancel</a> <input type=submit value=Save>
+</form>
+</html>
