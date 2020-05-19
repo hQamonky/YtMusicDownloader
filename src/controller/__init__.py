@@ -138,6 +138,7 @@ class Controller:
             logs.append(Controller.download_playlist(playlist['id']))
         return logs
 
+    # Don't be scared
     @staticmethod
     def download_playlist(playlist_id):
         # Update youtube-dl
@@ -272,6 +273,10 @@ class Controller:
         return log
 
     # Music ------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_music(identifier):
+        return Database.get_music(identifier)
 
     @staticmethod
     def get_new_music():

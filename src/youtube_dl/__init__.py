@@ -70,8 +70,6 @@ class YoutubeDl:
         process = subprocess.run(["youtube-dl", "-ci",
                                   "-x", "--audio-format", "mp3",
                                   "--embed-thumbnail",
-                                  # "--min-sleep-interval", "4",
-                                  # "--max-sleep-interval", "10",
                                   "-o", output,
                                   url],
                                  check=True, stdout=subprocess.PIPE, universal_newlines=True)
