@@ -167,6 +167,14 @@ class Database:
         return "Music updated"
 
     @staticmethod
+    def get_music(identifier):
+        connection = Database.connect()
+        c = connection.cursor()
+        music = Music.select(c, identifier)
+        Database.close(connection)
+        return music[0]
+
+    @staticmethod
     def get_new_music():
         connection = Database.connect()
         c = connection.cursor()
@@ -315,6 +323,11 @@ class Music:
     @staticmethod
     def drop(cursor):
         cursor.execute("DROP TABLE IF EXISTS Music")
+
+    @staticmethod
+    def select(cursor, identifier):
+        cursor.execute("SELECT * FROM Music WHERE id = ?", (identifier,))
+        return cursor.fetchall()
 
     @staticmethod
     def select_new(cursor):

@@ -37,8 +37,8 @@ class YoutubeDl:
     @staticmethod
     def list_playlist(url):
         process = subprocess.run(["youtube-dl", "-ci",
-                                  "--min-sleep-interval", "4",
-                                  "--max-sleep-interval", "10",
+                                  # "--min-sleep-interval", "4",
+                                  # "--max-sleep-interval", "10",
                                   "--flat-playlist", "-J", url],
                                  check=True, stdout=subprocess.PIPE, universal_newlines=True)
         json_string = process.stdout[:-1]
@@ -48,8 +48,8 @@ class YoutubeDl:
     @staticmethod
     def get_video_info(url):
         process = subprocess.run(["youtube-dl", "-ci",
-                                  "--min-sleep-interval", "4",
-                                  "--max-sleep-interval", "10",
+                                  # "--min-sleep-interval", "4",
+                                  # "--max-sleep-interval", "10",
                                   # "--cookies", "./src/youtube_dl/cookies.txt",
                                   "-J", url],
                                  check=True, stdout=subprocess.PIPE, universal_newlines=True)
@@ -70,8 +70,6 @@ class YoutubeDl:
         process = subprocess.run(["youtube-dl", "-ci",
                                   "-x", "--audio-format", "mp3",
                                   "--embed-thumbnail",
-                                  "--min-sleep-interval", "4",
-                                  "--max-sleep-interval", "10",
                                   "-o", output,
                                   url],
                                  check=True, stdout=subprocess.PIPE, universal_newlines=True)
