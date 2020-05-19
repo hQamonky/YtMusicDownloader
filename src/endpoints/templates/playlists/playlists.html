@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Playlists</title>
+    </head>
+    <body>
+        {% extends "home.html" %}
+        {% block content %}
+            <h2>Playlists</h2>
+            <p>
+                <a href="{{ url_for('.ui_new_playlist') }}"> New Playlist </a>
+            </p>
+            <p>
+                {{table}}
+            </p>
+        {% endblock %}
+    </body>
+</html>

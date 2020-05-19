@@ -1,8 +1,8 @@
 # YtMusicDownloader
-YtMusicDownloader is a python service that downloads music from YouTube automatically. Service is manageable through an integrated API.  
+YtMusicDownloader is a python service that downloads music from YouTube automatically. The service is manageable through an integrated API. In case you don't want to use a client that uses the API, you can also use the service through the integrated web interface accessible from the /ui/home endpoint.  
 YtMusicDownloader uses youtube-dl to download files. Shout-outs to them and [here](https://ytdl-org.github.io/youtube-dl/) is their website.  
 To see features and usage of the API, refer to ["YtMusicDownloader/docs/API User Guide.md"](https://github.com/hQamonky/YtMusicDownloader/blob/master/docs/Api%20User%20Guide.md). this document is also available on "/" once the web server is running.  
-The project integrates docker and the simplest way to use it is to clone the whole project and use docker. This guide will go over on how to do this, but you can refer to the [docker documentation](https://docs.docker.com/) for any problems or if you want to configure more advanced stuff yourself.
+The project integrates docker and the simplest way to use it is to clone the whole project and use docker. This guide will go over on how to do this, but you can refer to the [docker documentation](https://docs.docker.com/) for any problems or if you want to configure more advanced stuff yourself.    
 # Installation
 ## 1. Install Docker
 ### Linux (debian based)
@@ -64,6 +64,9 @@ Write down the container id or the name of your container.
 Then stop the container with:  
 `sudo docker stop container_id` (replace *container_id* with the id (or name) you just retrieved)  
 You can also use the `docker kill` command, refer to the docker documentation for more information on that.  
+## Using the web interface
+The service can be used by using the simple web interface that it integrates.  
+This interface is accessible from the /ui/home endpoint. From there you will have all the links to other pages of the gui.  
 # Update
 Unfortunately, there is no "simple" update process, you basically have to do the whole installation process again :)  
 Well not everything actually, you already have installed docker and setup the container. So depending on the update, might not need to rebuild the docker container.  
