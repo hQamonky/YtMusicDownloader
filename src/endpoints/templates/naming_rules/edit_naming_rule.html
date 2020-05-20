@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Edit Naming Rule</title>
+<h2>Edit Naming Rule</h2>
+<p>
+    id: {{ id }}
+</p>
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <dl>
+        {{ render_field(form.replace) }}
+        {{ render_field(form.replace_by) }}
+        {{ render_field(form.priority) }}
+    </dl>
+    <p><a href="{{ url_for('.ui_naming_rules') }}">Cancel</a> <input type=submit value=Save>
+</form>
+</html>
