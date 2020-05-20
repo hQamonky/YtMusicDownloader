@@ -339,13 +339,13 @@ class Music:
 
     @staticmethod
     def select_new(cursor):
-        cursor.execute("SELECT * FROM Music WHERE new = '1'")
+        cursor.execute("SELECT * FROM Music WHERE new = 'true'")
         return cursor.fetchall()
 
     @staticmethod
     # def insert(cursor, identifier, name, title, artist, channel, upload_date):
     def insert(cursor, identifier, name, title, artist, channel):
-        cursor.execute("INSERT INTO Music VALUES (?, ?, ?, ?, ?, '1')",
+        cursor.execute("INSERT INTO Music VALUES (?, ?, ?, ?, ?, 'true')",
                        (identifier, name, title, artist, channel))
 
     @staticmethod
