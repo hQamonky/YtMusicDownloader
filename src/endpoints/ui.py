@@ -157,13 +157,12 @@ def ui_edit_music(identifier):
 
 
 class MusicForm(Form):
-    bool_types = [('1', '1'), ('0', '0')]
+    bool_types = [('true', 'true'), ('false', 'false')]
     id = StringField('id')
     name = StringField('name')
     title = StringField('title')
     artist = StringField('artist')
     channel = StringField('channel')
-    # new = StringField('new')
     new = SelectField('new', choices=bool_types)
 
 
@@ -240,8 +239,11 @@ def ui_delete_naming_rule(identifier):
             # Delete rule
             Controller.delete_naming_rule(identifier)
             return redirect('/ui/naming-rules')
-        return render_template('naming_rules/delete_naming_rule.html', id=naming_rule['id'], replace=naming_rule['replace'],
-                               replace_by=naming_rule['replace_by'], priority=naming_rule['priority'])
+        return render_template('naming_rules/delete_naming_rule.html',
+                               id=naming_rule['id'],
+                               replace=naming_rule['replace'],
+                               replace_by=naming_rule['replace_by'],
+                               priority=naming_rule['priority'])
 
 
 class NamingRuleForm(Form):
@@ -250,26 +252,85 @@ class NamingRuleForm(Form):
     priority = StringField('priority')
 
 
-# Naming Rules ---------------------------------------------------------------------------------------------------------
+# Channels -------------------------------------------------------------------------------------------------------------
 
 
-# @app.route('/ui/channels')
-# def ui_channels():
-#     # Declare the table
-#     class ItemTable(Table):
-#         channel = Col('channel')
-#         separator = Col('separator')
-#         artist_before_title = Col('artist_before_title')
-#         # Add edit button
-#         edit = LinkCol('Edit', 'ui_edit_channel', url_kwargs=dict(identifier='id'))
-#         # Add delete button
-#         delete = LinkCol('Delete', 'ui_delete_playlist', url_kwargs=dict(identifier='id'))
-#         # Add download button
-#         download = LinkCol('Download', 'ui_download_playlist', url_kwargs=dict(identifier='id'))
-#
-#     # Get some data
-#     data = Controller.get_playlists()
-#     # Populate the table
-#     table = ItemTable(data)
-#     # Render html
-#     return render_template("playlists/playlists.html", table=table)
+@app.route('/ui/channels')
+def ui_channels():
+    # Declare the table
+    class ItemTable(Table):
+        channel = Col('channel')
+        separator = Col('separator')
+        artist_before_title = Col('artist_before_title')
+        # Add edit button
+        edit = LinkCol('Edit', 'ui_edit_channel', url_kwargs=dict(identifier='channel'))
+        # Add delete button
+        delete = LinkCol('Delete', 'ui_delete_channel', url_kwargs=dict(identifier='channel'))
+
+    # Get some data
+    data = Controller.get_channels()
+    # Populate the table
+    table = ItemTable(data)
+    # Render html
+    return render_template("channels/channels.html", table=table)
+
+
+@app.route('/ui/channel/new', methods=['GET', 'POST'])
+def ui_new_channel():
+    form = ChannelForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        # Get form data
+        class Args:
+            channel = form.channel.data
+            separator = form.separator.data
+            artist_before_title = form.artist_before_title.data
+
+        # save the channel
+        Controller.new_channel(Args())
+        return redirect('/ui/channels')
+
+    return render_template('channels/new_channel.html', form=form)
+
+
+@app.route('/ui/channel/<identifier>', methods=['GET', 'POST'])
+def ui_edit_channel(identifier):
+    # Get channel info
+    channel = Controller.get_channel(identifier)
+    form = ChannelForm(formdata=request.form, separator=channel['separator'],
+                       artist_before_title=channel['artist_before_title'])
+
+    if channel:
+        if request.method == 'POST' and form.validate():
+            # save edits
+            class Args:
+                separator = form.separator.data
+                artist_before_title = form.artist_before_title.data
+
+            Controller.update_channel(identifier, Args())
+            return redirect('/ui/channels')
+        return render_template('channels/edit_channel.html', form=form, channel=channel['channel'])
+
+
+@app.route('/ui/channel/<identifier>/delete', methods=['GET', 'POST'])
+def ui_delete_channel(identifier):
+    # Get channel info
+    channel = Controller.get_channel(identifier)
+    form = ChannelForm(formdata=request.form)
+
+    if channel:
+        if request.method == 'POST':
+            # Delete channel
+            Controller.delete_channel(identifier)
+            return redirect('/ui/channels')
+        return render_template('channels/delete_channel.html',
+                               channel=channel['channel'],
+                               separator=channel['separator'],
+                               artist_before_title=channel['artist_before_title'])
+
+
+class ChannelForm(Form):
+    bool_types = [('true', 'true'), ('false', 'false')]
+    channel = StringField('channel')
+    separator = StringField('separator')
+    artist_before_title = SelectField('artist_before_title', choices=bool_types)

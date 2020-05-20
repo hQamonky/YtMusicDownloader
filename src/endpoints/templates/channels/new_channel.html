@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>New Channel</title>
+<h2>New Channel</h2>
+
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <dl>
+        {{ render_field(form.channel) }}
+        {{ render_field(form.separator) }}
+        {{ render_field(form.artist_before_title) }}
+    </dl>
+    <p><a href="{{ url_for('.ui_channels') }}">Cancel</a> <input type=submit value=Submit>
+</form>
+</html>

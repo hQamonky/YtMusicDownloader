@@ -76,7 +76,7 @@ class Controller:
     def factory_reset():
         config = {
             "version": "1.0",
-            "download_interval": "12",
+            "download_interval": "1",
             "use_custom_user": "true",
             "naming_format": {
                 "separator": " - ",
