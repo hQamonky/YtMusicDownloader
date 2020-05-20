@@ -4,22 +4,25 @@ YtMusicDownloader uses youtube-dl to download files. Shout-outs to them and [her
 To see features and usage of the API, refer to ["YtMusicDownloader/docs/API User Guide.md"](https://github.com/hQamonky/YtMusicDownloader/blob/master/docs/Api%20User%20Guide.md). this document is also available on "/" once the web server is running.  
 The project integrates docker and the simplest way to use it is to clone the whole project and use docker. This guide will go over on how to do this, but you can refer to the [docker documentation](https://docs.docker.com/) for any problems or if you want to configure more advanced stuff yourself.
 # Automatic Installation
-The automatic installation is just a bash script that runs the default commands from the manual installation.  
+The automatic installation is just a script that runs the default commands from the manual installation.  
 Note that if you run into problems, or you want to personalize your installation, you will have to go through the manual installation. 
-## Linux (Debian based) & Raspbian & Mac OS
+## Linux (Debian based), Raspbian & Mac OS
 ### From terminal
-Linux  
-`wget -P ~/Downloads https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/debian_installer.sh`  
-`chmod +x ~/Downloads/debian_installer.sh`  
-`~/Downlaods/debian_installer.sh`  
+Linux (but not Raspbian)   
+> `wget -P ~/Downloads https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/debian_installer.sh`  
+> `chmod +x ~/Downloads/debian_installer.sh`  
+> `~/Downlaods/debian_installer.sh`  
+
 Raspbian  
-`wget -P ~/Downloads https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/raspbian_installer.sh`  
-`chmod +x ~/Downloads/raspbian_installer.sh`  
-`~/Downlaods/raspbian_installer.sh`  
+> `wget -P ~/Downloads https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/raspbian_installer.sh`  
+> `chmod +x ~/Downloads/raspbian_installer.sh`  
+> `~/Downlaods/raspbian_installer.sh`  
+  
 Mac OS  
-`wget -P ~/Downloads https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/mac_installer.sh`  
-`chmod +x ~/Downloads/mac_installer.sh`  
-`~/Downlaods/mac_installer.sh`  
+> `wget -P ~/Downloads https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/mac_installer.sh`  
+> `chmod +x ~/Downloads/mac_installer.sh`  
+> `~/Downlaods/mac_installer.sh`  
+
 ### From GUI
 Open on the following link that matches your operating system:  
 - [Linux (debian based)](https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/master/installers/debian_installer.sh)  
@@ -30,17 +33,14 @@ Then, right click anywhere on the page and click "Save as...".
 Open a terminal where you downloaded the file.  
 Make the script executable: `chmod +x your_installer.sh`  
 Finally run the script.  
-## Windows 10
-On Windows 10, you will need to install Docker and Git first. Then you will have to run a bat script.  
-### Install Docker
-Follow the [docker documentation](https://docs.docker.com/get-docker/).  
-### Install Git
-Got to the [git website](https://git-scm.com/downloads) and download and install the package for Windows.  
-### Get the script  
+## Windows 10  
+### Download the installation script  
 Open on the following link: https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/master/installers/windows_installer.bat  
 Then, right click anywhere on the page and click "Save as...".  
-### Run the script
-Select the downloaded script, right click and run it as administrator.
+### Run the script as administrator 
+Right click on "Start" (windows button on the bottom left corner) and select "Command Prompt (Admin)".  
+Navigate to the folder where you downloaded the script: `cd %USERPROFILE%\Downloads`.  
+Run the script: `windows_installer.bat`
 # Manual Installation
 ## 1. Install Docker
 ### Linux (debian based)
@@ -66,10 +66,10 @@ If snap is not installed, install it with `sudo apt install snapd`.
 > 5. Install docker-compose (we won't need it though)
 > `sudo pip3 install docker-compose`
 
-### Mac OS and Windows 10
+### Mac OS & Windows 10
 Follow the [docker documentation](https://docs.docker.com/).
 ## 2. Download the project from Github
-### Linux and Mac OS
+### Linux & Mac OS
 > 1. Create a folder  
 > `mkdir /usr/local/bin/qmk`
 > 2. Download the project from GitHub  
@@ -148,16 +148,13 @@ Save and exit.
 Make the file executable: `sudo chmod +x ~/qmk/YtMusicDownloader/basic_update.sh`  
 To run the script: `sudo /usr/local/bin/qmk/YtMusicDownloader/basic_update.sh`  
 #### Full update
+WARNING: this will erase your data!
 Create `gedit ~/qmk/YtMusicDownloader/full_update.sh`  
 ``` bash
 #!/bin/sh
 
-cp /usr/local/bin/qmk/YtMusicDownloader/src/ytMusicDownload.db ~/ytMusicDownload_bkp.db
-cp /usr/local/bin/qmk/YtMusicDownloader/src/configuration.json ~/configuration_bkp.json
+git reset --hard
 git -C /usr/local/bin/qmk/YtMusicDownloader pull
-cp ~/ytMusicDownload_bkp.db /usr/local/bin/qmk/YtMusicDownloader/src/ytMusicDownload.db
-cp ~/configuration_bkp.json /usr/local/bin/qmk/YtMusicDownloader/src/configuration.json
-
 sudo docker container rm -f qmk_ymd
 sudo docker build --no-cache -t qmk_yt_music_dl /usr/local/bin/qmk/YtMusicDownloader
 sudo docker run -p 8092:8080 -v /usr/local/bin/qmk/YtMusicDownloader:/usr/src/app -v ~/Music:/Music -d --name qmk_ymd qmk_yt_music_dl
