@@ -371,3 +371,14 @@ class ConfigurationForm(Form):
     use_custom_user = SelectField('use_custom_user', choices=bool_types)
     separator = StringField('separator')
     artist_before_title = SelectField('artist_before_title', choices=bool_types)
+
+
+@app.route('/ui/factory-reset', methods=['GET', 'POST'])
+def ui_factory_reset():
+    # Get channel info
+    form = ChannelForm(formdata=request.form)
+    if request.method == 'POST':
+        # Reset
+        Controller.factory_reset()
+        return redirect('/ui/home')
+    return render_template('factory_reset.html')

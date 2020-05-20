@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Factory Reset</title>
+<h2>Factory Reset</h2>
+<p>
+    Are you sure that you want to reset configuration and database to factory values?
+</p>
+<p>
+    This will reset the configuration to default.<br/>
+    This will also erase registered playlists, music, naming rules and channels.<br/>
+    The downloaded music files will not be erased, but re-adding and downloading a playlist in the future will re-download and replace the files (if set to the same output folder).<br/>
+    The default naming rules will be added to the database.
+</p>
+<form method=post>
+    <p><a href="{{ url_for('.ui_home') }}">Cancel</a> <input type=submit value=Continue>
+</form>
+</html>
