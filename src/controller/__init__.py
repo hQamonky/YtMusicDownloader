@@ -75,7 +75,7 @@ class Controller:
     @staticmethod
     def factory_reset():
         config = {
-            "version": "1.0",
+            "version": "2.0",
             "download_interval": "1",
             "use_custom_user": "true",
             "naming_format": {

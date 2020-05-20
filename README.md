@@ -22,9 +22,9 @@ Mac OS
 `~/Downlaods/mac_installer.sh`  
 ### From GUI
 Open on the following link that matches your operating system:  
-- [Linux (debian based)](https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/debian_installer.sh)  
-- [Raspbian](https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/raspbian_installer.sh)  
-- [Mac OS](https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/mac_installer.sh)  
+- [Linux (debian based)](https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/master/installers/debian_installer.sh)  
+- [Raspbian](https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/master/installers/raspbian_installer.sh)  
+- [Mac OS](https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/master/installers/mac_installer.sh)  
 
 Then, right click anywhere on the page and click "Save as...".  
 Open a terminal where you downloaded the file.  
@@ -37,7 +37,7 @@ Follow the [docker documentation](https://docs.docker.com/get-docker/).
 ### Install Git
 Got to the [git website](https://git-scm.com/downloads) and download and install the package for Windows.  
 ### Get the script  
-Open on the following link: https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/windows_installer.bat  
+Open on the following link: https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/master/installers/windows_installer.bat  
 Then, right click anywhere on the page and click "Save as...".  
 ### Run the script
 Select the downloaded script, right click and run it as administrator.
