@@ -11,17 +11,17 @@ Note that if you run into problems, or you want to personalize your installation
 Linux (but not Raspbian)   
 > `wget -P ~/Downloads https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/debian_installer.sh`  
 > `chmod +x ~/Downloads/debian_installer.sh`  
-> `~/Downlaods/debian_installer.sh`  
+> `~/Downloads/debian_installer.sh`  
 
 Raspbian  
 > `wget -P ~/Downloads https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/raspbian_installer.sh`  
 > `chmod +x ~/Downloads/raspbian_installer.sh`  
-> `~/Downlaods/raspbian_installer.sh`  
+> `~/Downloads/raspbian_installer.sh`  
   
 Mac OS  
 > `wget -P ~/Downloads https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/develop/installers/mac_installer.sh`  
 > `chmod +x ~/Downloads/mac_installer.sh`  
-> `~/Downlaods/mac_installer.sh`  
+> `~/Downloads/mac_installer.sh`  
 
 ### From GUI
 Open on the following link that matches your operating system:  
@@ -37,10 +37,9 @@ Finally run the script.
 ### Download the installation script  
 Open on the following link: https://raw.githubusercontent.com/hQamonky/YtMusicDownloader/master/installers/windows_installer.bat  
 Then, right click anywhere on the page and click "Save as...".  
+Save the file but without the ".txt" extension! Keep the ".bat" extension.  
 ### Run the script as administrator 
-Right click on "Start" (windows button on the bottom left corner) and select "Command Prompt (Admin)".  
-Navigate to the folder where you downloaded the script: `cd %USERPROFILE%\Downloads`.  
-Run the script: `windows_installer.bat`
+Navigate to where you've downloaded the script and do Right Click -> Run as administrator.  
 # Manual Installation
 ## 1. Install Docker
 ### Linux (debian based)
