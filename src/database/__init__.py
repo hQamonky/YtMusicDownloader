@@ -494,10 +494,10 @@ class NamingRules:
     def update(cursor, identifier, replace, replace_by, priority):
         cursor.execute("UPDATE NamingRules SET "
                        "replace = ?, "
-                       "replace_by = ? "
+                       "replace_by = ?, "
                        "priority = ? "
                        "WHERE "
-                       "identifier = ?",
+                       "id = ?",
                        (replace, replace_by, priority, identifier))
 
     @staticmethod

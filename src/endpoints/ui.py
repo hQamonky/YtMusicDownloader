@@ -48,6 +48,7 @@ def ui_new_playlist():
         class Args:
             url = form.url.data
             folder = form.folder.data
+
         # save the playlist
         Controller.new_playlist(Args())
         return redirect('/ui/playlists')
@@ -66,6 +67,7 @@ def ui_edit_playlist(identifier):
             # save edits
             class Args:
                 folder = form.folder.data
+
             Controller.update_playlist(identifier, Args())
             return redirect('/ui/playlists')
         return render_template('playlists/edit_playlist.html', form=form, id=playlist['id'], name=playlist['name'],
@@ -142,6 +144,7 @@ def ui_edit_music(identifier):
                 title = form.title.data
                 artist = form.artist.data
                 new = form.new.data
+
             Controller.update_music(identifier, Args())
             return redirect('/ui/music/new')
         return render_template('music/edit_music.html', form=form,
@@ -162,3 +165,111 @@ class MusicForm(Form):
     channel = StringField('channel')
     # new = StringField('new')
     new = SelectField('new', choices=bool_types)
+
+
+# Naming Rules ---------------------------------------------------------------------------------------------------------
+
+
+@app.route('/ui/naming-rules')
+def ui_naming_rules():
+    # Declare the table
+    class ItemTable(Table):
+        id = Col('id')
+        replace = Col('replace')
+        replace_by = Col('replace_by')
+        priority = Col('priority')
+        # Add edit button
+        edit = LinkCol('Edit', 'ui_edit_naming_rule', url_kwargs=dict(identifier='id'))
+        # Add delete button
+        delete = LinkCol('Delete', 'ui_delete_naming_rule', url_kwargs=dict(identifier='id'))
+
+    # Get some data
+    data = Controller.get_naming_rules()
+    # Populate the table
+    table = ItemTable(data)
+    # Render html
+    return render_template("naming_rules/naming_rules.html", table=table)
+
+
+@app.route('/ui/naming-rules/new', methods=['GET', 'POST'])
+def ui_new_naming_rule():
+    form = NamingRuleForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        # Get form data
+        class Args:
+            replace = form.replace.data
+            replace_by = form.replace_by.data
+            priority = form.priority.data
+
+        # save the rule
+        Controller.new_naming_rule(Args())
+        return redirect('/ui/naming-rules')
+
+    return render_template('naming_rules/new_naming_rule.html', form=form)
+
+
+@app.route('/ui/naming-rule/<identifier>', methods=['GET', 'POST'])
+def ui_edit_naming_rule(identifier):
+    # Get rule info
+    naming_rule = Controller.get_naming_rule(identifier)
+    form = NamingRuleForm(formdata=request.form, replace=naming_rule['replace'], replace_by=naming_rule['replace_by'],
+                          priority=naming_rule['priority'])
+
+    if naming_rule:
+        if request.method == 'POST' and form.validate():
+            # save edits
+            class Args:
+                replace = form.replace.data
+                replace_by = form.replace_by.data
+                priority = form.priority.data
+
+            Controller.update_naming_rule(identifier, Args())
+            return redirect('/ui/naming-rules')
+        return render_template('naming_rules/edit_naming_rule.html', form=form, id=naming_rule['id'])
+
+
+@app.route('/ui/naming-rule/<identifier>/delete', methods=['GET', 'POST'])
+def ui_delete_naming_rule(identifier):
+    # Get rule info
+    naming_rule = Controller.get_naming_rule(identifier)
+    form = NamingRuleForm(formdata=request.form)
+
+    if naming_rule:
+        if request.method == 'POST' and form.validate():
+            # Delete rule
+            Controller.delete_naming_rule(identifier)
+            return redirect('/ui/naming-rules')
+        return render_template('naming_rules/delete_naming_rule.html', id=naming_rule['id'], replace=naming_rule['replace'],
+                               replace_by=naming_rule['replace_by'], priority=naming_rule['priority'])
+
+
+class NamingRuleForm(Form):
+    replace = StringField('replace')
+    replace_by = StringField('replace_by')
+    priority = StringField('priority')
+
+
+# Naming Rules ---------------------------------------------------------------------------------------------------------
+
+
+# @app.route('/ui/channels')
+# def ui_channels():
+#     # Declare the table
+#     class ItemTable(Table):
+#         channel = Col('channel')
+#         separator = Col('separator')
+#         artist_before_title = Col('artist_before_title')
+#         # Add edit button
+#         edit = LinkCol('Edit', 'ui_edit_channel', url_kwargs=dict(identifier='id'))
+#         # Add delete button
+#         delete = LinkCol('Delete', 'ui_delete_playlist', url_kwargs=dict(identifier='id'))
+#         # Add download button
+#         download = LinkCol('Download', 'ui_download_playlist', url_kwargs=dict(identifier='id'))
+#
+#     # Get some data
+#     data = Controller.get_playlists()
+#     # Populate the table
+#     table = ItemTable(data)
+#     # Render html
+#     return render_template("playlists/playlists.html", table=table)
