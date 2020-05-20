@@ -2,8 +2,24 @@
 YtMusicDownloader is a python service that downloads music from YouTube automatically. The service is manageable through an integrated API. In case you don't want to use a client that uses the API, you can also use the service through the integrated web interface accessible from the /ui/home endpoint.  
 YtMusicDownloader uses youtube-dl to download files. Shout-outs to them and [here](https://ytdl-org.github.io/youtube-dl/) is their website.  
 To see features and usage of the API, refer to ["YtMusicDownloader/docs/API User Guide.md"](https://github.com/hQamonky/YtMusicDownloader/blob/master/docs/Api%20User%20Guide.md). this document is also available on "/" once the web server is running.  
-The project integrates docker and the simplest way to use it is to clone the whole project and use docker. This guide will go over on how to do this, but you can refer to the [docker documentation](https://docs.docker.com/) for any problems or if you want to configure more advanced stuff yourself.    
-# Installation
+The project integrates docker and the simplest way to use it is to clone the whole project and use docker. This guide will go over on how to do this, but you can refer to the [docker documentation](https://docs.docker.com/) for any problems or if you want to configure more advanced stuff yourself.
+# Automatic Installation
+The automatic installation is just a bash script that runs the default commands from the manual installation.  
+Note that if you run into problems, or you want to personalize your installation, you will have to go through the manual installation. 
+## Linux (Debian based) & Raspbian & Mac OS
+### Get the bash script
+### Run the bash script
+Open a terminal and simply run the script.
+## Windows 10
+On Windows 10, you will need to install Docker and Git first. Then you will have to run a bat script.  
+### Install Docker
+Follow the [docker documentation](https://docs.docker.com/get-docker/).  
+### Install Git
+Got to the [git website](https://git-scm.com/downloads) and download and install the package for Windows.  
+### Get the script  
+### Run the script
+Select the downloaded script, right click and run it.
+# Manual Installation
 ## 1. Install Docker
 ### Linux (debian based)
 > 1. Update your system  
