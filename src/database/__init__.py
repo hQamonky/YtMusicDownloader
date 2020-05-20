@@ -64,6 +64,7 @@ class Database:
         # priority 2
         NamingRules.insert(c, " [NCS Release]", "", "2")
         NamingRules.insert(c, " [Monstercat Release]", "", "2")
+        NamingRules.insert(c, " [Diversity Release]", "", "2")
         NamingRules.insert(c, " [NCS Official Video]", "", "2")
         NamingRules.insert(c, " [Monstercat FREE Release]", "", "2")
         NamingRules.insert(c, " [Monstercat Official Music Video]", "", "2")

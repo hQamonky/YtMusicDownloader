@@ -334,3 +334,40 @@ class ChannelForm(Form):
     channel = StringField('channel')
     separator = StringField('separator')
     artist_before_title = SelectField('artist_before_title', choices=bool_types)
+
+
+# Configuration --------------------------------------------------------------------------------------------------------
+
+
+@app.route('/ui/configuration', methods=['GET', 'POST'])
+def ui_configuration():
+    # Get playlist info
+    configuration = Controller.get_configuration()
+    form = ConfigurationForm(formdata=request.form,
+                             download_interval=configuration['download_interval'],
+                             use_custom_user=configuration['use_custom_user'],
+                             separator=configuration['naming_format']['separator'],
+                             artist_before_title=configuration['naming_format']['artist_before_title'])
+
+    if configuration:
+        if request.method == 'POST' and form.validate():
+            # save edits
+            class Args:
+                download_interval = form.download_interval.data
+                use_custom_user = form.use_custom_user.data
+                separator = form.separator.data
+                artist_before_title = form.artist_before_title.data
+            args = Args()
+            Controller.set_download_interval(args.download_interval)
+            Controller.update_config_user(args.use_custom_user)
+            Controller.update_config_naming_format(args)
+            return redirect('/ui/home')
+        return render_template('configuration.html', form=form)
+
+
+class ConfigurationForm(Form):
+    bool_types = [('true', 'true'), ('false', 'false')]
+    download_interval = StringField('download_interval')
+    use_custom_user = SelectField('use_custom_user', choices=bool_types)
+    separator = StringField('separator')
+    artist_before_title = SelectField('artist_before_title', choices=bool_types)
