@@ -36,7 +36,6 @@ class Database:
         Playlists.drop(c)
         Music.drop(c)
         PlaylistMusic.drop(c)
-        DownloadOccurrences.drop(c)
         NamingRules.drop(c)
         Channels.drop(c)
 
@@ -44,7 +43,6 @@ class Database:
         Playlists.create(c)
         Music.create(c)
         PlaylistMusic.create(c)
-        DownloadOccurrences.create(c)
         NamingRules.create(c)
         Channels.create(c)
 
@@ -436,29 +434,6 @@ class Channels:
     @staticmethod
     def delete(cursor, identifier):
         cursor.execute("DELETE FROM Channels WHERE channel = ?", (identifier,))
-
-
-class DownloadOccurrences:
-    @staticmethod
-    def create(cursor):
-        cursor.execute("CREATE TABLE DownloadOccurrences (occurrence text PRIMARY KEY)")
-
-    @staticmethod
-    def drop(cursor):
-        cursor.execute("DROP TABLE IF EXISTS DownloadOccurrences")
-
-    @staticmethod
-    def select_all(cursor):
-        cursor.execute("SELECT * FROM DownloadOccurrences")
-        return cursor.fetchall()
-
-    @staticmethod
-    def insert(cursor, time):
-        cursor.execute("INSERT INTO DownloadOccurrences VALUES ?", (time,))
-
-    @staticmethod
-    def delete(cursor, identifier):
-        cursor.execute("DELETE FROM DownloadOccurrences WHERE occurrence = ?", (identifier,))
 
 
 class NamingRules:
