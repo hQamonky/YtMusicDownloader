@@ -121,7 +121,7 @@ Unfortunately, there is no "simple" update process, you basically have to do the
 Well not everything actually, you already have installed docker and setup the container. So depending on the update, might not need to rebuild the docker container.  
 **Be aware that the following steps might (normally should not) overwrite your data. If you don't want to lose it, make a backup of ytMusicDownloader.db and of configuration.json from ~/qmk/YtMusicDownloader/src/.**     
 > 1. Update the project from GitHub: `git -C ~/qmk/YtMusicDownloader pull`  
-> 2. Restart your container: `sudo docker restart container qmk_ymd`  
+> 2. Restart your container: `sudo docker restart qmk_ymd`  
 If this works, you're good and you don't need to go any further.  
 If it doesn't it means that you have to rebuild the docker container and do a "full update". So continue with the following steps.  
 > 3. Remove the docker container: `sudo docker container rm -f qmk_ymd`  
@@ -141,7 +141,7 @@ cp ~/qmk/YtMusicDownloader/src/configuration.json ~/configuration_bkp.json
 git -C ~/qmk/YtMusicDownloader pull
 cp ~/ytMusicDownload_bkp.db ~/qmk/YtMusicDownloader/src/ytMusicDownload.db
 cp ~/configuration_bkp.json ~/qmk/YtMusicDownloader/src/configuration.json
-sudo docker restart container qmk_ymd
+sudo docker restart qmk_ymd
 ```
 Save and exit.  
 Make the file executable: `sudo chmod +x ~/qmk/YtMusicDownloader/basic_update.sh`  
