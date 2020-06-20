@@ -22,6 +22,7 @@ Manage, through this API, a daemon that automatically downloads music from YouTu
 - `/configuration/naming-format`
 - `/factory-reset`
 - `/auto-download`
+- `/youtube-dl/update`
 - `/playlists`
 - `/playlists/download`
 - `/playlist/<identifier>`
@@ -98,6 +99,10 @@ The first download will occur in an amount of time equal to the "interval" value
     "interval": "12"
 }
 ```
+
+## `/youtube-dl/update`
+If you get an internal server error, updating youtube-dl might be a quick fix.  
+If not, you'll have to wait for an update from qmk YtMusicDownloader.  
 
 ## `/playlists`
 ### `GET`  

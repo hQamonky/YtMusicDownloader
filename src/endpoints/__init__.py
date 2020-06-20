@@ -67,6 +67,12 @@ class AutoDownload(Resource):
         return {'message': 'Success', 'data': result}, 201
 
 
+class UpdateYtDl(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.update_youtube_dl()}, 200
+
+
 class FactoryReset(Resource):
     @staticmethod
     def post():
@@ -104,6 +110,7 @@ api.add_resource(ConfigUser, '/configuration/user')
 api.add_resource(ConfigNamingFormat, '/configuration/naming-format')
 api.add_resource(FactoryReset, '/factory-reset')
 api.add_resource(AutoDownload, '/auto-download')
+api.add_resource(UpdateYtDl, '/youtube-dl/update')
 # Playlists
 api.add_resource(Playlists, '/playlists')
 api.add_resource(DownloadPlaylists, '/playlists/download')

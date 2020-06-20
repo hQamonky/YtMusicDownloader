@@ -65,6 +65,10 @@ class Controller:
             config = json.load(json_file)
         return config['use_custom_user']
 
+    @staticmethod
+    def update_youtube_dl():
+        return YoutubeDl.update()
+
     # Database ---------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -142,8 +146,9 @@ class Controller:
     @staticmethod
     def download_playlist(playlist_id):
         # Update youtube-dl
-        print('Checking for youtube-dl updates...')
-        print(YoutubeDl.update()['message'])
+        print(YoutubeDl.get_version())
+        # print('Checking for youtube-dl updates...')
+        # print(YoutubeDl.update()['message'])
         # Get playlist info from youtube
         print("yt_playlist : ")
         yt_playlist = YoutubeDl.list_playlist(YoutubeDl.playlist_url() + playlist_id)

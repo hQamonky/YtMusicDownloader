@@ -2,6 +2,8 @@ import subprocess
 import json
 import requests
 
+path = './src/youtube_dl/youtube-dl'
+
 
 class YoutubeDl:
     @staticmethod
@@ -13,13 +15,20 @@ class YoutubeDl:
         return "https://www.youtube.com/playlist?list="
 
     @staticmethod
+    def pwd():
+        process = subprocess.run(["pwd"], check=True, stdout=subprocess.PIPE,
+                                 universal_newlines=True)
+        return process.stdout[:-1]
+
+    @staticmethod
     def get_version():
-        return subprocess.run(["youtube-dl", "--version"], check=True, stdout=subprocess.PIPE,
-                              universal_newlines=True)
+        process = subprocess.run([path, "--version"], check=True, stdout=subprocess.PIPE,
+                                 universal_newlines=True)
+        return process.stdout[:-1]
 
     @staticmethod
     def update():
-        process = subprocess.run(["youtube-dl", "--update"], check=True, stdout=subprocess.PIPE,
+        process = subprocess.run([path, "--update"], check=True, stdout=subprocess.PIPE,
                                  universal_newlines=True)
         result = {"message": process.stdout[:-1], "update_type": "youtube-dl"}
         if process.stdout == "It looks like you installed youtube-dl with a package manager, pip, setup.py or a " \
@@ -36,7 +45,7 @@ class YoutubeDl:
 
     @staticmethod
     def list_playlist(url):
-        process = subprocess.run(["youtube-dl", "-ci",
+        process = subprocess.run([path, "-ci",
                                   # "--min-sleep-interval", "4",
                                   # "--max-sleep-interval", "10",
                                   "--flat-playlist", "-J", url],
@@ -47,7 +56,7 @@ class YoutubeDl:
 
     @staticmethod
     def get_video_info(url):
-        process = subprocess.run(["youtube-dl", "-ci",
+        process = subprocess.run([path, "-ci",
                                   # "--min-sleep-interval", "4",
                                   # "--max-sleep-interval", "10",
                                   # "--cookies", "./src/youtube_dl/cookies.txt",
@@ -67,7 +76,7 @@ class YoutubeDl:
 
     @staticmethod
     def download_music(url, output):
-        process = subprocess.run(["youtube-dl", "-ci",
+        process = subprocess.run([path, "-ci",
                                   "-x", "--audio-format", "mp3",
                                   "--embed-thumbnail",
                                   "-o", output,
