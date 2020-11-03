@@ -152,7 +152,10 @@ class Database:
         connection = Database.connect()
         c = connection.cursor()
         # Music.insert(c, id_music, name, title, artist, channel, upload_date)
-        Music.insert(c, id_music, name, title, artist, channel)
+        try:
+            Music.insert(c, id_music, name, title, artist, channel)
+        except ValueError:
+            print("Error : Cannot insert Music in database. The entry might already exist ?")
         PlaylistMusic.insert(c, id_playlist, id_music)
         Database.close(connection)
         return "Music added"
