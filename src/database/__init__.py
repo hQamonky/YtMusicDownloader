@@ -154,7 +154,7 @@ class Database:
         # Music.insert(c, id_music, name, title, artist, channel, upload_date)
         try:
             Music.insert(c, id_music, name, title, artist, channel)
-        except ValueError:
+        except sqlite3.IntegrityError:
             print("Error : Cannot insert Music in database. The entry might already exist ?")
         PlaylistMusic.insert(c, id_playlist, id_music)
         Database.close(connection)
