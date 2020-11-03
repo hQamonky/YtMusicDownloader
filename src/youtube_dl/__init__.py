@@ -76,6 +76,7 @@ class YoutubeDl:
 
     @staticmethod
     def download_music(url, output):
+        print('running command : ' + path + " -ci -x --audio-format mp3 --embed-thumbnail -o " + output + " " + url)
         process = subprocess.run([path, "-ci",
                                   "-x", "--audio-format", "mp3",
                                   "--embed-thumbnail",
