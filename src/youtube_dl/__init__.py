@@ -45,6 +45,7 @@ class YoutubeDl:
 
     @staticmethod
     def list_playlist(url):
+        print('running command : ' + path + " -ci --flat-playlist -J " + url)
         process = subprocess.run([path, "-ci",
                                   # "--min-sleep-interval", "4",
                                   # "--max-sleep-interval", "10",

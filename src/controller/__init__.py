@@ -104,6 +104,7 @@ class Controller:
         if args.folder[-1:] == '/':
             args.folder = args.folder[:-1]
         yt_playlist = YoutubeDl.list_playlist(args.url)
+        print(yt_playlist)
         Database.new_playlist(yt_playlist['id'], yt_playlist['title'], yt_playlist['uploader'], args.folder)
         return {
             "id": yt_playlist['id'],
