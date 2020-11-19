@@ -83,6 +83,10 @@ class Database:
         NamingRules.insert(c, " (Official Preview)", "", "2")
         NamingRules.insert(c, " (official music video)", "", "2")
         NamingRules.insert(c, " | Complexity Release", "", "2")
+        NamingRules.insert(c, "[Audio]", "", "2")
+        NamingRules.insert(c, "【𝙻𝚈𝚁𝙸𝙲𝚂】", "", "2")
+        NamingRules.insert(c, "(Official Audio)", "", "2")
+        NamingRules.insert(c, "	(Lyrics)", "", "2")
         # priority 3
         NamingRules.insert(c, "♦ Hardstyle ♦", "(Hardstyle)", "3")
 
