@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<title>New Playlist</title>
-<h2>New Playlist</h2>
+    <title>New Playlist</title>
+    <h2>New Playlist</h2>
 
-{% from "_formhelpers.html" import render_field %}
-<form method=post>
-    <dl>
-        {{ render_field(form.url) }}
-        {{ render_field(form.folder) }}
-    </dl>
-    <p><a href="{{ url_for('.ui_playlists') }}">Cancel</a> <input type=submit value=Submit>
-</form>
+    {% from "_formhelpers.html" import render_field %}
+    <form method=post>
+        <dl>
+            {{ render_field(form.url) }}
+            {{ render_field(form.name) }}
+            {{ render_field(form.folder) }}
+        </dl>
+        <p><a href="{{ url_for('.ui_playlists') }}">Cancel</a> <input type=submit value=Submit>
+    </form>
 </html>

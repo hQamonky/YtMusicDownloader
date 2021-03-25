@@ -14,6 +14,7 @@ class Playlists(Resource):
     def post():
         parser = reqparse.RequestParser()
         parser.add_argument('url', required=True)
+        parser.add_argument('name', required=True)
         parser.add_argument('folder', required=True)
         # Parse the arguments into an object
         args = parser.parse_args()
@@ -35,6 +36,8 @@ class Playlist(Resource):
     @staticmethod
     def post(identifier):
         parser = reqparse.RequestParser()
+        parser.add_argument('url', required=True)
+        parser.add_argument('name', required=True)
         parser.add_argument('folder', required=True)
         # Parse the arguments into an object
         args = parser.parse_args()

@@ -103,10 +103,10 @@ class Database:
         return playlists
 
     @staticmethod
-    def new_playlist(identifier, name, uploader, folder):
+    def new_playlist(youtube_id, name, uploader, folder):
         connection = Database.connect()
         c = connection.cursor()
-        Playlists.insert(c, identifier, name, uploader, folder)
+        Playlists.insert(c, youtube_id, name, uploader, folder)
         Database.close(connection)
         return "Playlist added"
 
@@ -119,10 +119,10 @@ class Database:
         return playlist[0]
 
     @staticmethod
-    def update_playlist(id_playlist, name, uploader, folder):
+    def update_playlist(id_playlist, youtube_id, name, uploader, folder):
         connection = Database.connect()
         c = connection.cursor()
-        Playlists.update(c, id_playlist, name, uploader, folder)
+        Playlists.update(c, id_playlist, youtube_id, name, uploader, folder)
         Database.close(connection)
         return "Playlist updated"
 
@@ -291,7 +291,12 @@ class Database:
 class Playlists:
     @staticmethod
     def create(cursor):
-        cursor.execute("CREATE TABLE Playlists (id text PRIMARY KEY, name text, uploader text, folder text)")
+        cursor.execute("CREATE TABLE Playlists ("
+                       "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                       "youtube_id text, "
+                       "name text, "
+                       "uploader text, "
+                       "folder text)")
 
     @staticmethod
     def drop(cursor):
@@ -308,19 +313,20 @@ class Playlists:
         return cursor.fetchall()
 
     @staticmethod
-    def insert(cursor, identifier, name, uploader, folder):
-        cursor.execute("INSERT INTO Playlists VALUES (?, ?, ?, ?)",
-                       (identifier, name, uploader, folder))
+    def insert(cursor, youtube_id, name, uploader, folder):
+        cursor.execute("INSERT INTO Playlists VALUES (youtube_id, name, uploader, folder)",
+                       (youtube_id, name, uploader, folder))
 
     @staticmethod
-    def update(cursor, identifier, name, uploader, folder):
+    def update(cursor, identifier, youtube_id, name, uploader, folder):
         cursor.execute("UPDATE Playlists SET "
+                       "youtube_id = ?, "
                        "name = ?, "
                        "uploader = ?, "
                        "folder = ? "
                        "WHERE "
                        "id = ?",
-                       (name, uploader, folder, identifier))
+                       (youtube_id, name, uploader, folder, identifier))
 
     @staticmethod
     def delete(cursor, identifier):

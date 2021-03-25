@@ -3,7 +3,7 @@ Manage, through this API, a daemon that automatically downloads music from YouTu
 ## Features
 - Handle multiple playlists :
     - Add/Remove playlists
-    - Edit playlist download folder
+    - Edit playlists
     - Trigger playlist download
 - Set interval time between each automatic download
 - Handle newly downloaded music :
@@ -13,7 +13,7 @@ Manage, through this API, a daemon that automatically downloads music from YouTu
 - Handle title and artist naming :
     - Add/Edit/Delete rules
     - Strings replace (ex: replace " [Official Music Video]" by "")
-    - Set title/artist format to apply depending on channel 
+    - Set title/artist format to apply depending on youtube channel 
     - Set title/artist default format to apply for new channels
 ## List of endpoints
 - `/`
@@ -111,12 +111,14 @@ Get information on the registered playlists in the database.
 ```json
 [
     {
-        "id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
-        "name": "Best of Willy tracks 2020 part 2",
+        "id": "0",
+        "youtube_id": "PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
+        "name": "Best of Willy tracks",
         "uploader": "William Herlicq",
         "folder": "/Music/Best of WillyTracks"
     },{
-        "id": "PLCVGGn6GhhDtHxCJcPNymXhCtyEisxERY",
+        "id": "1",
+        "youtube_id": "PLCVGGn6GhhDtHxCJcPNymXhCtyEisxERY",
         "name": "Best of Chill Music",
         "uploader": "William Herlicq",
         "folder": "/Music/Chill"
@@ -130,6 +132,7 @@ Register a playlist in the database.
 ```json
 {
     "url": "https://www.youtube.com/playlist?list=PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
+    "name": "Best of Willy tracks",
     "folder": "/Music/Best of WillyTracks"
 }
 ```
@@ -141,10 +144,12 @@ Trigger download of all registered playlists.
 
 ## `/playlist/<identifier>`
 ### `POST`  
-Edit the download output folder for a specific playlist.  
+Edit a specified playlist.  
 *Body*  
 ```json
 {
+    "url": "https://www.youtube.com/playlist?list=PLCVGGn6GhhDu_4yn_9eN3xBYB4POkLBYT",
+    "name": "Best of Willy tracks",
     "folder": "/Music/Best of WillyTracks"
 }
 ```

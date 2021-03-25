@@ -105,10 +105,11 @@ class Controller:
             args.folder = args.folder[:-1]
         yt_playlist = YoutubeDl.list_playlist(args.url)
         print(yt_playlist)
-        Database.new_playlist(yt_playlist['id'], yt_playlist['title'], yt_playlist['uploader'], args.folder)
+        Database.new_playlist(yt_playlist['id'], args.name, yt_playlist['uploader'], args.folder)
         return {
             "id": yt_playlist['id'],
-            "name": yt_playlist['title'],
+            "your_playlist_name": args.name,
+            "yt_playlist_name": yt_playlist['title'],
             "uploader": yt_playlist['uploader'],
             "folder": args.folder
         }
@@ -121,12 +122,14 @@ class Controller:
     def update_playlist(identifier, args):
         if args.folder[-1:] == '/':
             args.folder = args.folder[:-1]
-        playlist = Database.get_playlist(identifier)
-        Database.update_playlist(identifier, playlist['name'], playlist['uploader'], args.folder)
+        yt_playlist = YoutubeDl.list_playlist(args.url)
+        print(yt_playlist)
+        Database.update_playlist(identifier, yt_playlist['id'], args.name, yt_playlist['uploader'], args.folder)
         return {
             "id": identifier,
-            "name": playlist['name'],
-            "uploader": playlist['uploader'],
+            "youtube_id": yt_playlist['id'],
+            "name": args.name,
+            "uploader": yt_playlist['uploader'],
             "folder": args.folder
         }
 
