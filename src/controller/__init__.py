@@ -149,20 +149,23 @@ class Controller:
     # Don't be scared
     @staticmethod
     def download_playlist(playlist_id):
+        # Get playlist info from database (not created yet)
+        print("db_playlist : ")
+        db_playlist = Database.get_playlist(playlist_id)
+        print(db_playlist)
+        # Get playlists youtube id
+        youtube_id = db_playlist['youtube_id']
         # Update youtube-dl
         print(YoutubeDl.get_version())
         # print('Checking for youtube-dl updates...')
         # print(YoutubeDl.update()['message'])
         # Get playlist info from youtube
         print("yt_playlist : ")
-        yt_playlist = YoutubeDl.list_playlist(YoutubeDl.playlist_url() + playlist_id)
+        yt_playlist = YoutubeDl.list_playlist(YoutubeDl.playlist_url() + youtube_id)
         print(yt_playlist)
-        # Get playlist info from database (not created yet)
-        print("db_playlist : ")
-        db_playlist = Database.get_playlist(playlist_id)
-        print(db_playlist)
         log = {
             'id': playlist_id,
+            'youtube_id': db_playlist['youtube_id'],
             'name': db_playlist['name'],
             'uploader': db_playlist['uploader'],
             'folder': db_playlist['folder'],
@@ -175,8 +178,8 @@ class Controller:
         for video in yt_playlist['entries']:
             name = video['title']
             print('For video : ' + name + ' - ' + video['id'])
-            # if video is in playlist database
-            if Database.is_new_music_in_playlist(playlist_id, video['id']):
+            # if video is not already in database
+            if Database.is_new_music(video['id']):
                 print('New music in this playlist...')
                 # Get video info from youtube
                 # yt_video_info = YoutubeDl.get_video_info(YoutubeDl.video_url() + video['id'])
@@ -264,7 +267,7 @@ class Controller:
                 # Insert Music in database
                 # Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
                 #                    yt_video_info['upload_date'])
-                Database.new_music(playlist_id, video['id'], video['title'] + '.mp3', title, artist, channel['channel'])
+                Database.new_music(video['id'], video['title'] + '.mp3', title, artist, channel['channel'])
                 # Add entry to Playlist_Music table
                 log['downloaded'].append({
                     'id': video['id'],
@@ -278,7 +281,11 @@ class Controller:
             else:
                 print('Music already downloaded -> skip')
                 log['skipped'].append(video['id'])
-
+            # if video is not in playlist database
+            if Database.is_new_music_in_playlist(playlist_id, video['id']):
+                print('Music is new in this playlist')
+                Database.add_music_in_playlist(video['id'], playlist_id)
+                # TODO : Add Music in Mopidy playlist
         return log
 
     # Music ------------------------------------------------------------------------------------------------------------

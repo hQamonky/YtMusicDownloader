@@ -148,11 +148,20 @@ class Database:
         else:
             return False
 
+    @staticmethod
+    # def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
+    def add_music_in_playlist(id_music, id_playlist):
+        connection = Database.connect()
+        c = connection.cursor()
+        PlaylistMusic.insert(c, id_playlist, id_music)
+        Database.close(connection)
+        return "Music added to playlist"
+
     # Music ------------------------------------------------------------------------------------------------------------
 
     @staticmethod
     # def new_music(id_playlist, id_music, name, title, artist, channel, upload_date):
-    def new_music(id_playlist, id_music, name, title, artist, channel):
+    def new_music(id_music, name, title, artist, channel):
         connection = Database.connect()
         c = connection.cursor()
         # Music.insert(c, id_music, name, title, artist, channel, upload_date)
@@ -160,7 +169,6 @@ class Database:
             Music.insert(c, id_music, name, title, artist, channel)
         except sqlite3.IntegrityError:
             print("Error : Cannot insert Music in database. The entry might already exist ?")
-        PlaylistMusic.insert(c, id_playlist, id_music)
         Database.close(connection)
         return "Music added"
 
@@ -195,6 +203,17 @@ class Database:
         playlists = PlaylistMusic.select_music(c, id_music)
         Database.close(connection)
         return playlists
+
+    @staticmethod
+    def is_new_music(id_music):
+        connection = Database.connect()
+        c = connection.cursor()
+        count = Music.count_music(c, id_music)[0]['COUNT(*)']
+        Database.close(connection)
+        if count == 0:
+            return True
+        else:
+            return False
 
     # Naming Rules -----------------------------------------------------------------------------------------------------
 
@@ -373,6 +392,12 @@ class Music:
     @staticmethod
     def delete(cursor, identifier):
         cursor.execute("DELETE FROM Music WHERE id = ?", (identifier,))
+
+    @staticmethod
+    def count_music(cursor, identifier):
+        cursor.execute("SELECT COUNT(*) FROM Music "
+                       "WHERE id = ?", (identifier,))
+        return cursor.fetchall()
 
 
 class PlaylistMusic:
