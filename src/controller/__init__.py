@@ -97,6 +97,7 @@ class Controller:
         config = {
             "version": "2.0",
             "download_interval": "1",
+            "mopidy_playlists_path": "~/.config/share/mopidy/m3u",
             "use_custom_user": "true",
             "naming_format": {
                 "separator": " - ",

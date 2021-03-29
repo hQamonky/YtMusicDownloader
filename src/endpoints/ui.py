@@ -47,6 +47,7 @@ def ui_new_playlist():
         # Get form data
         class Args:
             url = form.url.data
+            name = form.name.data
             folder = form.folder.data
 
         # save the playlist
@@ -60,18 +61,25 @@ def ui_new_playlist():
 def ui_edit_playlist(identifier):
     # Get playlist info
     playlist = Controller.get_playlist(identifier)
-    form = PlaylistForm(formdata=request.form, folder=playlist['folder'])
+    form = PlaylistForm(formdata=request.form,
+                        name=playlist['name'], youtube_id=playlist['youtube_id'], folder=playlist['folder'])
 
     if playlist:
         if request.method == 'POST' and form.validate():
             # save edits
             class Args:
+                url = form.url.data
+                name = form.name.data
                 folder = form.folder.data
 
             Controller.update_playlist(identifier, Args())
             return redirect('/ui/playlists')
-        return render_template('playlists/edit_playlist.html', form=form, id=playlist['id'], name=playlist['name'],
-                               uploader=playlist['uploader'])
+        return render_template('playlists/edit_playlist.html', form=form,
+                               id=playlist['id'],
+                               name=playlist['name'],
+                               youtube_id=playlist['youtube_id'],
+                               uploader=playlist['uploader'],
+                               folder=playlist['folder'])
 
 
 @app.route('/ui/playlist/<identifier>/delete', methods=['GET', 'POST'])
@@ -85,8 +93,12 @@ def ui_delete_playlist(identifier):
             # Delete playlist
             Controller.delete_playlist(identifier)
             return redirect('/ui/playlists')
-        return render_template('playlists/delete_playlist.html', id=playlist['id'], name=playlist['name'],
-                               uploader=playlist['uploader'], folder=playlist['folder'])
+        return render_template('playlists/delete_playlist.html',
+                               id=playlist['id'],
+                               name=playlist['name'],
+                               youtube_id=playlist['youtube_id'],
+                               uploader=playlist['uploader'],
+                               folder=playlist['folder'])
 
 
 @app.route('/ui/playlist/<identifier>/download', methods=['GET'])
@@ -97,12 +109,17 @@ def ui_download_playlist(identifier):
     if playlist:
         # Download playlist
         logs = Controller.download_playlist(identifier)
-        return render_template('playlists/download_playlist.html', logs=logs, id=playlist['id'], name=playlist['name'],
-                               uploader=playlist['uploader'], folder=playlist['folder'])
+        return render_template('playlists/download_playlist.html', logs=logs,
+                               id=playlist['id'],
+                               name=playlist['name'],
+                               youtube_id=playlist['youtube_id'],
+                               uploader=playlist['uploader'],
+                               folder=playlist['folder'])
 
 
 class PlaylistForm(Form):
     url = StringField('url')
+    name = StringField('name')
     folder = StringField('folder')
 
 
