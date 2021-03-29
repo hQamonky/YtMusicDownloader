@@ -35,6 +35,22 @@ class Controller:
         return int(config['download_interval'])
 
     @staticmethod
+    def set_mopidy_playlists_path(path):
+        # Get configuration file
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        config['mopidy_playlists_path'] = path
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        return config
+
+    @staticmethod
+    def get_mopidy_playlists_path():
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        return config['mopidy_playlists_path']
+
+    @staticmethod
     def update_config_naming_format(args):
         # Get configuration file
         with open('./src/configuration.json') as json_file:
