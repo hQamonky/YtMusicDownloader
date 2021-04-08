@@ -24,12 +24,12 @@ class Mopidy:
 
     def add_music_to_playlist(self, music, playlist):
         print("Adding Music to Playlist")
-        print("Music :" + music)
-        print("Playlist :" + playlist)
+        print("Music : " + music)
+        print("Playlist : " + playlist)
         music_uri = self.convert_path_to_uri("/" + music)
-        print("File URI :" + music_uri)
+        print("File URI : " + music_uri)
         mopidy_uri = music_uri.replace("file:///", "local:track:")
-        print("Mopidy URI :" + mopidy_uri)
+        print("Mopidy URI : " + mopidy_uri)
         with open(self.playlists_path + "/" + playlist + ".m3u8", "a") as playlist_file:
             playlist_file.write("\n" + mopidy_uri)
         return
