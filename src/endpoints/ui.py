@@ -23,7 +23,6 @@ def ui_playlists():
         id = Col('id')
         name = Col('name')
         uploader = Col('uploader')
-        folder = Col('folder')
         # Add edit button
         edit = LinkCol('Edit', 'ui_edit_playlist', url_kwargs=dict(identifier='id'))
         # Add delete button
@@ -48,7 +47,6 @@ def ui_new_playlist():
         class Args:
             url = form.url.data
             name = form.name.data
-            folder = form.folder.data
 
         # save the playlist
         Controller.new_playlist(Args())
@@ -62,7 +60,7 @@ def ui_edit_playlist(identifier):
     # Get playlist info
     playlist = Controller.get_playlist(identifier)
     form = PlaylistForm(formdata=request.form,
-                        name=playlist['name'], youtube_id=playlist['youtube_id'], folder=playlist['folder'])
+                        name=playlist['name'], youtube_id=playlist['youtube_id'])
 
     if playlist:
         if request.method == 'POST' and form.validate():
@@ -70,7 +68,6 @@ def ui_edit_playlist(identifier):
             class Args:
                 url = form.url.data
                 name = form.name.data
-                folder = form.folder.data
 
             Controller.update_playlist(identifier, Args())
             return redirect('/ui/playlists')
@@ -78,8 +75,7 @@ def ui_edit_playlist(identifier):
                                id=playlist['id'],
                                name=playlist['name'],
                                youtube_id=playlist['youtube_id'],
-                               uploader=playlist['uploader'],
-                               folder=playlist['folder'])
+                               uploader=playlist['uploader'])
 
 
 @app.route('/ui/playlist/<identifier>/delete', methods=['GET', 'POST'])
@@ -97,8 +93,7 @@ def ui_delete_playlist(identifier):
                                id=playlist['id'],
                                name=playlist['name'],
                                youtube_id=playlist['youtube_id'],
-                               uploader=playlist['uploader'],
-                               folder=playlist['folder'])
+                               uploader=playlist['uploader'])
 
 
 @app.route('/ui/playlist/<identifier>/download', methods=['GET'])
@@ -113,14 +108,12 @@ def ui_download_playlist(identifier):
                                id=playlist['id'],
                                name=playlist['name'],
                                youtube_id=playlist['youtube_id'],
-                               uploader=playlist['uploader'],
-                               folder=playlist['folder'])
+                               uploader=playlist['uploader'])
 
 
 class PlaylistForm(Form):
     url = StringField('url')
     name = StringField('name')
-    folder = StringField('folder')
 
 
 # Music ----------------------------------------------------------------------------------------------------------------
@@ -361,8 +354,10 @@ def ui_configuration():
     # Get playlist info
     configuration = Controller.get_configuration()
     form = ConfigurationForm(formdata=request.form,
-                             download_interval=configuration['download_interval'],
                              youtube_dl_path=configuration['youtube_dl_path'],
+                             download_path=configuration['download_path'],
+                             download_interval=configuration['download_interval'],
+                             mopidy_local_path=configuration['mopidy_local_path'],
                              mopidy_playlists_path=configuration['mopidy_playlists_path'],
                              use_custom_user=configuration['use_custom_user'],
                              separator=configuration['naming_format']['separator'],
@@ -372,15 +367,19 @@ def ui_configuration():
         if request.method == 'POST' and form.validate():
             # save edits
             class Args:
-                download_interval = form.download_interval.data
                 youtube_dl_path = form.youtube_dl_path.data
+                download_path = form.download_path.data
+                download_interval = form.download_interval.data
+                mopidy_local_path = form.mopidy_local_path.data
                 mopidy_playlists_path = form.mopidy_playlists_path.data
                 use_custom_user = form.use_custom_user.data
                 separator = form.separator.data
                 artist_before_title = form.artist_before_title.data
             args = Args()
-            Controller.set_download_interval(args.download_interval)
             Controller.set_youtube_dl_path(args.youtube_dl_path)
+            Controller.set_download_path(args.download_path)
+            Controller.set_download_interval(args.download_interval)
+            Controller.set_mopidy_local_path(args.mopidy_local_path)
             Controller.set_mopidy_playlists_path(args.mopidy_playlists_path)
             Controller.update_config_user(args.use_custom_user)
             Controller.update_config_naming_format(args)
@@ -390,8 +389,10 @@ def ui_configuration():
 
 class ConfigurationForm(Form):
     bool_types = [('true', 'true'), ('false', 'false')]
-    download_interval = StringField('download_interval')
     youtube_dl_path = StringField('youtube_dl_path')
+    download_path = StringField('download_path')
+    download_interval = StringField('download_interval')
+    mopidy_local_path = StringField('mopidy_local_path')
     mopidy_playlists_path = StringField('mopidy_playlists_path')
     use_custom_user = SelectField('use_custom_user', choices=bool_types)
     separator = StringField('separator')

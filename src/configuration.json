@@ -1,1 +1,1 @@
-{"version": "2.0", "download_interval": "1", "youtube_dl_path": "./src/youtube_dl/youtube-dl", "mopidy_playlists_path": "/home/qmk/Desktop", "use_custom_user": "true", "naming_format": {"separator": " - ", "artist_before_title": "true"}}
+{"version": "2.0", "youtube_dl_path": "./src/youtube_dl/youtube-dl", "download_path": "/home/pi/Music", "download_interval": "1", "mopidy_local_path": "/home/pi/Music", "mopidy_playlists_path": "/home/pi/.local/share/mopidy/m3u", "use_custom_user": "true", "naming_format": {"separator": " - ", "artist_before_title": "true"}}

@@ -4,10 +4,16 @@
 {% from "_formhelpers.html" import render_field %}
 <form method=post>
     <dl>
+        {{ render_field(form.youtube_dl_path) }}
+    </dl>
+    <dl>
+        {{ render_field(form.download_path) }}
+    </dl>
+    <dl>
         {{ render_field(form.download_interval) }}
     </dl>
     <dl>
-        {{ render_field(form.youtube_dl_path) }}
+        {{ render_field(form.mopidy_local_path) }}
     </dl>
     <dl>
         {{ render_field(form.mopidy_playlists_path) }}

@@ -21,6 +21,40 @@ class Controller:
         return config
 
     @staticmethod
+    def set_youtube_dl_path(path):
+        # Get configuration file
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        config['youtube_dl_path'] = path
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        return config
+
+    @staticmethod
+    def get_youtube_dl_path():
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        return config['youtube_dl_path']
+
+    @staticmethod
+    def set_download_path(path):
+        if path[-1:] == '/':
+            path = path[:-1]
+        # Get configuration file
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        config['download_path'] = path
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        return config
+
+    @staticmethod
+    def get_download_path():
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        return config['download_path']
+
+    @staticmethod
     def set_download_interval(time):
         with open('./src/configuration.json') as json_file:
             config = json.load(json_file)
@@ -34,6 +68,24 @@ class Controller:
         with open('./src/configuration.json') as json_file:
             config = json.load(json_file)
         return int(config['download_interval'])
+
+    @staticmethod
+    def set_mopidy_local_path(path):
+        if path[-1:] == '/':
+            path = path[:-1]
+        # Get configuration file
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        config['mopidy_local_path'] = path
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        return config
+
+    @staticmethod
+    def get_mopidy_local_path():
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        return config['mopidy_local_path']
 
     @staticmethod
     def set_mopidy_playlists_path(path):
@@ -52,24 +104,6 @@ class Controller:
         with open('./src/configuration.json') as json_file:
             config = json.load(json_file)
         return config['mopidy_playlists_path']
-
-    @staticmethod
-    def set_youtube_dl_path(path):
-        if path[-1:] == '/':
-            path = path[:-1]
-        # Get configuration file
-        with open('./src/configuration.json') as json_file:
-            config = json.load(json_file)
-        config['youtube_dl_path'] = path
-        with open('./src/configuration.json', 'w') as outfile:
-            json.dump(config, outfile)
-        return config
-
-    @staticmethod
-    def get_youtube_dl_path():
-        with open('./src/configuration.json') as json_file:
-            config = json.load(json_file)
-        return config['youtube_dl_path']
 
     @staticmethod
     def update_config_naming_format(args):
@@ -118,8 +152,10 @@ class Controller:
     def factory_reset():
         config = {
             "version": "2.0",
-            "download_interval": "1",
             "youtube_dl_path": "./src/youtube_dl/youtube-dl",
+            "download_path": "/home/pi/Music",
+            "download_interval": "1",
+            "mopidy_local_path": "/home/pi/Music",
             "mopidy_playlists_path": "/home/pi/.local/share/mopidy/m3u",
             "use_custom_user": "true",
             "naming_format": {
@@ -141,20 +177,17 @@ class Controller:
 
     @staticmethod
     def new_playlist(args):
-        if args.folder[-1:] == '/':
-            args.folder = args.folder[:-1]
         youtube_dl = YoutubeDl(Controller.get_youtube_dl_path())
         yt_playlist = youtube_dl.list_playlist(args.url)
         print(yt_playlist)
-        Database.new_playlist(yt_playlist['id'], args.name, yt_playlist['uploader'], args.folder)
+        Database.new_playlist(yt_playlist['id'], args.name, yt_playlist['uploader'])
         mopidy = Mopidy(Controller.get_mopidy_playlists_path())
         mopidy.create_playlist(args.name)
         return {
             "id": yt_playlist['id'],
             "your_playlist_name": args.name,
             "yt_playlist_name": yt_playlist['title'],
-            "uploader": yt_playlist['uploader'],
-            "folder": args.folder
+            "uploader": yt_playlist['uploader']
         }
 
     @staticmethod
@@ -163,18 +196,15 @@ class Controller:
 
     @staticmethod
     def update_playlist(identifier, args):
-        if args.folder[-1:] == '/':
-            args.folder = args.folder[:-1]
         youtube_dl = YoutubeDl(Controller.get_youtube_dl_path())
         yt_playlist = youtube_dl.list_playlist(args.url)
         print(yt_playlist)
-        Database.update_playlist(identifier, yt_playlist['id'], args.name, yt_playlist['uploader'], args.folder)
+        Database.update_playlist(identifier, yt_playlist['id'], args.name, yt_playlist['uploader'])
         return {
             "id": identifier,
             "youtube_id": yt_playlist['id'],
             "name": args.name,
-            "uploader": yt_playlist['uploader'],
-            "folder": args.folder
+            "uploader": yt_playlist['uploader']
         }
 
     @staticmethod
@@ -213,7 +243,6 @@ class Controller:
             'youtube_id': db_playlist['youtube_id'],
             'name': db_playlist['name'],
             'uploader': db_playlist['uploader'],
-            'folder': db_playlist['folder'],
             'skipped': [],
             'downloaded': []
         }
@@ -286,7 +315,7 @@ class Controller:
                 comment = '{\"platform\": \"youtube\", \"id\": \"' + video['id'] + '\"}'
                 print('Comment : ' + comment)
                 # Prepare output folder
-                output_folder = r'' + db_playlist['folder']
+                output_folder = r'' + Controller.get_download_path()
                 os.makedirs(output_folder, exist_ok=True)
                 use_custom_user = Controller.get_use_custom_user()
                 if use_custom_user == "true":
@@ -326,16 +355,14 @@ class Controller:
             else:
                 print('Music already downloaded -> skip')
                 log['skipped'].append(video['id'])
-                # Get file local path for later
-                music = Database.get_music(video['id'])
-                file = r'' + db_playlist['folder'] + '/' + music['name']
             # if video is not in playlist database
             if Database.is_new_music_in_playlist(playlist_id, video['id']):
                 print('Music is new in this playlist')
                 Database.add_music_in_playlist(video['id'], playlist_id)
                 # Add Music in Mopidy playlist
                 mopidy = Mopidy(Controller.get_mopidy_playlists_path())
-                mopidy.add_music_to_playlist(file, db_playlist['name'])
+                music = Database.get_music(video['id'])
+                mopidy.add_music_to_playlist(music['name'], db_playlist['name'])
         return log
 
     # Music ------------------------------------------------------------------------------------------------------------
@@ -356,12 +383,9 @@ class Controller:
         music = Database.get_music(identifier)
         filename = music['name']
         # Get file locations
-        playlists = Database.get_music_playlists(identifier)
-        for playlist in playlists:
-            playlist_info = Database.get_playlist(playlist['id_playlist'])
-            path = playlist_info['folder']
-            # Apply tags
-            Controller.update_id3_tags(path + '/' + filename, args.title, args.artist)
+        path = Controller.get_download_path()
+        # Apply tags
+        Controller.update_id3_tags(path + '/' + filename, args.title, args.artist)
 
         return {
             "id": identifier,
