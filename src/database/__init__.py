@@ -58,6 +58,7 @@ class Database:
 
         # Add naming rules
         # priority 1
+        NamingRules.insert(c, " / ", " ", "1")
         NamingRules.insert(c, " ‒ ", " - ", "1")
         # priority 2
         NamingRules.insert(c, " [NCS Release]", "", "2")

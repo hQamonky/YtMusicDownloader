@@ -251,6 +251,8 @@ class Controller:
         # For each video in youtube playlist
         for video in yt_playlist['entries']:
             name = video['title']
+            # remove "/" characters
+            name = name.replace("/", "")
             print('For video : ' + name + ' - ' + video['id'])
             # if video is not already in database
             if Database.is_new_music(video['id']):
