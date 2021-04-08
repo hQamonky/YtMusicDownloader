@@ -2,6 +2,9 @@
 - Handle real playlists:
     - Dissociate id and youtube id + add custom playlist names
     - Handle Mopidy playlists (create a "mopidy" folder)
+- Handle syncthing conflicts
+    - Create method that deletes syncthing conflict files 
+    - run method after each download
 - Handle music archiving
     - Create ui to:
         - search the "Remove" playlist and display it's content

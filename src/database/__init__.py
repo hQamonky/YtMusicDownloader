@@ -190,6 +190,14 @@ class Database:
         return music
 
     @staticmethod
+    def get_all_music():
+        connection = Database.connect()
+        c = connection.cursor()
+        musics = Music.select_all(c)
+        Database.close(connection)
+        return musics
+
+    @staticmethod
     def get_music(identifier):
         connection = Database.connect()
         c = connection.cursor()
@@ -365,6 +373,11 @@ class Music:
     @staticmethod
     def select_music(cursor, identifier):
         cursor.execute("SELECT * FROM Music WHERE id = ?", (identifier,))
+        return cursor.fetchall()
+
+    @staticmethod
+    def select_all(cursor):
+        cursor.execute("SELECT * FROM Music")
         return cursor.fetchall()
 
     @staticmethod

@@ -20,3 +20,9 @@ class NewMusic(Resource):
     @staticmethod
     def get():
         return {'message': 'Success', 'data': Controller.get_new_music()}, 200
+
+
+class FixOldMusicTags(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.fix_old_music_tags()}, 200

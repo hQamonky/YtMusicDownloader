@@ -396,6 +396,31 @@ class Controller:
             "new": args.new
         }
 
+    @staticmethod
+    def fix_old_music_tags():
+        # Iterate on every music file
+        directory = Controller.get_download_path()
+        for filename in os.listdir(directory):
+            f = os.path.join(directory, filename)
+            # checking if it is a file
+            if os.path.isfile(f):
+                print("Treating file : " + f)
+                # Check tag values
+                tags = Controller.get_id3_tags(f)
+                # if tag is incorrect
+                if tags['title'].endswith('"') and len(tags['album']) > 150:
+                    # Fix title
+                    title = tags['title'][:-1]
+                    print("New title : " + title)
+                    # Fix album
+                    album = tags['album'].split('"')[0]
+                    print("New album : " + album)
+                    # Apply tags
+                    Controller.fix_old_id3_tags(f, title, album)
+                else:
+                    print("File is already ok.")
+        return
+
     # Naming Rules -----------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -499,4 +524,28 @@ class Controller:
             tag['title'] = title
         if artist:
             tag['artist'] = artist
+        tag.save(v2_version=3)
+
+    @staticmethod
+    def get_id3_tags(file):
+        try:
+            tag = EasyID3(file)
+            return tag
+        except:
+            tag = mutagen.File(file, easy=True)
+            tag.add_tags()
+            return
+
+    @staticmethod
+    # def set_id3_tags(file, title, artist, album, year, comment):
+    def fix_old_id3_tags(file, title, album):
+        try:
+            tag = EasyID3(file)
+        except:
+            tag = mutagen.File(file, easy=True)
+            tag.add_tags()
+        if title:
+            tag['title'] = title
+        if album:
+            tag['album'] = album
         tag.save(v2_version=3)
