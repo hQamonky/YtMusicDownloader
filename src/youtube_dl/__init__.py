@@ -2,10 +2,14 @@ import subprocess
 import json
 import requests
 
-path = './src/youtube_dl/youtube-dl'
-
 
 class YoutubeDl:
+
+    path = ""
+
+    def __init__(self, path):
+        self.path = path
+
     @staticmethod
     def video_url():
         return "https://www.youtube.com/watch?v="
@@ -20,15 +24,13 @@ class YoutubeDl:
                                  universal_newlines=True)
         return process.stdout[:-1]
 
-    @staticmethod
-    def get_version():
-        process = subprocess.run([path, "--version"], check=True, stdout=subprocess.PIPE,
+    def get_version(self):
+        process = subprocess.run([self.path, "--version"], check=True, stdout=subprocess.PIPE,
                                  universal_newlines=True)
         return process.stdout[:-1]
 
-    @staticmethod
-    def update():
-        process = subprocess.run([path, "--update"], check=True, stdout=subprocess.PIPE,
+    def update(self):
+        process = subprocess.run([self.path, "--update"], check=True, stdout=subprocess.PIPE,
                                  universal_newlines=True)
         result = {"message": process.stdout[:-1], "update_type": "youtube-dl"}
         if process.stdout == "It looks like you installed youtube-dl with a package manager, pip, setup.py or a " \
@@ -43,10 +45,9 @@ class YoutubeDl:
         return subprocess.run(["pip", "install", "youtube-dl", "--upgrade"], check=True, stdout=subprocess.PIPE,
                               universal_newlines=True)
 
-    @staticmethod
-    def list_playlist(url):
-        print('running command : ' + path + " -ci --flat-playlist -J " + url)
-        process = subprocess.run([path, "-ci",
+    def list_playlist(self, url):
+        print('running command : ' + self.path + " -ci --flat-playlist -J " + url)
+        process = subprocess.run([self.path, "-ci",
                                   # "--min-sleep-interval", "4",
                                   # "--max-sleep-interval", "10",
                                   "--flat-playlist", "-J", url],
@@ -55,9 +56,8 @@ class YoutubeDl:
         js = json.loads(json_string)
         return js
 
-    @staticmethod
-    def get_video_info(url):
-        process = subprocess.run([path, "-ci",
+    def get_video_info(self, url):
+        process = subprocess.run([self.path, "-ci",
                                   # "--min-sleep-interval", "4",
                                   # "--max-sleep-interval", "10",
                                   # "--cookies", "./src/youtube_dl/cookies.txt",
@@ -75,10 +75,10 @@ class YoutubeDl:
         print(data)
         return data
 
-    @staticmethod
-    def download_music(url, output):
-        print('running command : ' + path + " -ci -x --audio-format mp3 --embed-thumbnail -o " + output + " " + url)
-        process = subprocess.run([path, "-ci",
+    def download_music(self, url, output):
+        print('running command : ' + self.path + " -ci -x --audio-format mp3 --embed-thumbnail -o " + output + " "
+              + url)
+        process = subprocess.run([self.path, "-ci",
                                   "-x", "--audio-format", "mp3",
                                   "--embed-thumbnail",
                                   "-o", output,

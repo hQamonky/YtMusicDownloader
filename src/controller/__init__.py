@@ -54,6 +54,24 @@ class Controller:
         return config['mopidy_playlists_path']
 
     @staticmethod
+    def set_youtube_dl_path(path):
+        if path[-1:] == '/':
+            path = path[:-1]
+        # Get configuration file
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        config['youtube_dl_path'] = path
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        return config
+
+    @staticmethod
+    def get_youtube_dl_path():
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        return config['youtube_dl_path']
+
+    @staticmethod
     def update_config_naming_format(args):
         # Get configuration file
         with open('./src/configuration.json') as json_file:
@@ -86,7 +104,8 @@ class Controller:
 
     @staticmethod
     def update_youtube_dl():
-        return YoutubeDl.update()
+        youtube_dl = YoutubeDl(Controller.get_youtube_dl_path())
+        return youtube_dl.update()
 
     # Database ---------------------------------------------------------------------------------------------------------
 
@@ -100,6 +119,7 @@ class Controller:
         config = {
             "version": "2.0",
             "download_interval": "1",
+            "youtube_dl_path": "./src/youtube_dl/youtube-dl",
             "mopidy_playlists_path": "~/.local/share/mopidy/m3u",
             "use_custom_user": "true",
             "naming_format": {
@@ -123,7 +143,8 @@ class Controller:
     def new_playlist(args):
         if args.folder[-1:] == '/':
             args.folder = args.folder[:-1]
-        yt_playlist = YoutubeDl.list_playlist(args.url)
+        youtube_dl = YoutubeDl(Controller.get_youtube_dl_path())
+        yt_playlist = youtube_dl.list_playlist(args.url)
         print(yt_playlist)
         Database.new_playlist(yt_playlist['id'], args.name, yt_playlist['uploader'], args.folder)
         mopidy = Mopidy(Controller.get_mopidy_playlists_path())
@@ -144,7 +165,8 @@ class Controller:
     def update_playlist(identifier, args):
         if args.folder[-1:] == '/':
             args.folder = args.folder[:-1]
-        yt_playlist = YoutubeDl.list_playlist(args.url)
+        youtube_dl = YoutubeDl(Controller.get_youtube_dl_path())
+        yt_playlist = youtube_dl.list_playlist(args.url)
         print(yt_playlist)
         Database.update_playlist(identifier, yt_playlist['id'], args.name, yt_playlist['uploader'], args.folder)
         return {
@@ -178,12 +200,13 @@ class Controller:
         # Get playlists youtube id
         youtube_id = db_playlist['youtube_id']
         # Update youtube-dl
-        print(YoutubeDl.get_version())
+        youtube_dl = YoutubeDl(Controller.get_youtube_dl_path())
+        print(youtube_dl.get_version())
         # print('Checking for youtube-dl updates...')
-        # print(YoutubeDl.update()['message'])
+        # print(youtube_dl.update()['message'])
         # Get playlist info from youtube
         print("yt_playlist : ")
-        yt_playlist = YoutubeDl.list_playlist(YoutubeDl.playlist_url() + youtube_id)
+        yt_playlist = youtube_dl.list_playlist(YoutubeDl.playlist_url() + youtube_id)
         print(yt_playlist)
         log = {
             'id': playlist_id,
@@ -273,8 +296,8 @@ class Controller:
                     subprocess.run(["chmod", "755", output_folder],
                                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 # Download video
-                YoutubeDl.download_music(YoutubeDl.video_url() + video['id'],
-                                         output_folder + '/' + yt_video_info['title'] + ".webm")
+                youtube_dl.download_music(YoutubeDl.video_url() + video['id'], output_folder + '/'
+                                          + yt_video_info['title'] + ".webm")
                 # Set permissions to downloaded file
                 file = output_folder + '/' + yt_video_info['title'] + '.mp3'
                 if use_custom_user == "true":

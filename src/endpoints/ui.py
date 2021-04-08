@@ -362,6 +362,7 @@ def ui_configuration():
     configuration = Controller.get_configuration()
     form = ConfigurationForm(formdata=request.form,
                              download_interval=configuration['download_interval'],
+                             youtube_dl_path=configuration['youtube_dl_path'],
                              mopidy_playlists_path=configuration['mopidy_playlists_path'],
                              use_custom_user=configuration['use_custom_user'],
                              separator=configuration['naming_format']['separator'],
@@ -372,12 +373,14 @@ def ui_configuration():
             # save edits
             class Args:
                 download_interval = form.download_interval.data
+                youtube_dl_path = form.youtube_dl_path.data
                 mopidy_playlists_path = form.mopidy_playlists_path.data
                 use_custom_user = form.use_custom_user.data
                 separator = form.separator.data
                 artist_before_title = form.artist_before_title.data
             args = Args()
             Controller.set_download_interval(args.download_interval)
+            Controller.set_youtube_dl_path(args.youtube_dl_path)
             Controller.set_mopidy_playlists_path(args.mopidy_playlists_path)
             Controller.update_config_user(args.use_custom_user)
             Controller.update_config_naming_format(args)
@@ -388,6 +391,7 @@ def ui_configuration():
 class ConfigurationForm(Form):
     bool_types = [('true', 'true'), ('false', 'false')]
     download_interval = StringField('download_interval')
+    youtube_dl_path = StringField('youtube_dl_path')
     mopidy_playlists_path = StringField('mopidy_playlists_path')
     use_custom_user = SelectField('use_custom_user', choices=bool_types)
     separator = StringField('separator')
