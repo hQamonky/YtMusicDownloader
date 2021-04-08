@@ -250,10 +250,9 @@ class Controller:
         naming_rules = Database.get_naming_rules()
         # For each video in youtube playlist
         for video in yt_playlist['entries']:
-            name = video['title']
             # remove "/" characters
-            name = name.replace("/", "")
-            print('For video : ' + name + ' - ' + video['id'])
+            video_title = video['title'].replace("/", "")
+            print('For video : ' + video_title + ' - ' + video['id'])
             # if video is not already in database
             if Database.is_new_music(video['id']):
                 print('New music in this playlist...')
@@ -281,6 +280,7 @@ class Controller:
                 # artist = yt_video_info['creator']
                 title = None
                 artist = None
+                name = video_title
                 if title is None or artist is None:
                     # Apply naming rules
                     print('Applying naming rules...')
@@ -328,9 +328,9 @@ class Controller:
                                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 # Download video
                 youtube_dl.download_music(YoutubeDl.video_url() + video['id'], output_folder + '/'
-                                          + yt_video_info['title'] + ".webm")
+                                          + video_title + ".webm")
                 # Set permissions to downloaded file
-                file = output_folder + '/' + yt_video_info['title'] + '.mp3'
+                file = output_folder + '/' + video_title + '.mp3'
                 if use_custom_user == "true":
                     subprocess.run(["chown", "qmk", file],
                                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
@@ -341,13 +341,13 @@ class Controller:
                 # Controller.set_id3_tags(file, title, artist, album, year, comment)
                 Controller.set_id3_tags(file, title, artist, album, comment)
                 # Insert Music in database
-                # Database.new_music(playlist_id, video['id'], video['title']+'.mp3', title, artist, channel['channel'],
+                # Database.new_music(playlist_id, video['id'], video_title +'.mp3', title, artist, channel['channel'],
                 #                    yt_video_info['upload_date'])
-                Database.new_music(video['id'], video['title'] + '.mp3', title, artist, channel['channel'])
+                Database.new_music(video['id'], video_title + '.mp3', title, artist, channel['channel'])
                 # Add entry to Playlist_Music table
                 log['downloaded'].append({
                     'id': video['id'],
-                    'name': yt_video_info['title'],
+                    'name': video_title,
                     'title': title,
                     'artist': artist,
                     'channel': album,
