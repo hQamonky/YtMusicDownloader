@@ -1,5 +1,6 @@
 import mutagen
 
+from src.mopidy import Mopidy
 from src.youtube_dl import YoutubeDl
 from src.database import Database
 import json
@@ -36,6 +37,8 @@ class Controller:
 
     @staticmethod
     def set_mopidy_playlists_path(path):
+        if path[-1:] == '/':
+            path = path[:-1]
         # Get configuration file
         with open('./src/configuration.json') as json_file:
             config = json.load(json_file)
@@ -97,7 +100,7 @@ class Controller:
         config = {
             "version": "2.0",
             "download_interval": "1",
-            "mopidy_playlists_path": "~/.config/share/mopidy/m3u",
+            "mopidy_playlists_path": "~/.local/share/mopidy/m3u",
             "use_custom_user": "true",
             "naming_format": {
                 "separator": " - ",
@@ -123,6 +126,8 @@ class Controller:
         yt_playlist = YoutubeDl.list_playlist(args.url)
         print(yt_playlist)
         Database.new_playlist(yt_playlist['id'], args.name, yt_playlist['uploader'], args.folder)
+        mopidy = Mopidy(Controller.get_mopidy_playlists_path())
+        mopidy.create_playlist(args.name)
         return {
             "id": yt_playlist['id'],
             "your_playlist_name": args.name,
@@ -298,11 +303,16 @@ class Controller:
             else:
                 print('Music already downloaded -> skip')
                 log['skipped'].append(video['id'])
+                # Get file local path for later
+                music = Database.get_music(video['id'])
+                file = r'' + db_playlist['folder'] + '/' + music['name']
             # if video is not in playlist database
             if Database.is_new_music_in_playlist(playlist_id, video['id']):
                 print('Music is new in this playlist')
                 Database.add_music_in_playlist(video['id'], playlist_id)
-                # TODO : Add Music in Mopidy playlist
+                # Add Music in Mopidy playlist
+                mopidy = Mopidy(Controller.get_mopidy_playlists_path())
+                mopidy.add_music_to_playlist(file, db_playlist['name'])
         return log
 
     # Music ------------------------------------------------------------------------------------------------------------
