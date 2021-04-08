@@ -407,13 +407,18 @@ class Controller:
                 print("Treating file : " + f)
                 # Check tag values
                 tags = Controller.get_id3_tags(f)
+                title = tags['title'][0]
+                print("Initial title : ")
+                print(title)
+                album = tags['album'][0]
+                print("Initial album : " + album)
                 # if tag is incorrect
-                if tags['title'].endswith('"') and len(tags['album']) > 150:
+                if title.endswith('"') and len(album) > 150:
                     # Fix title
-                    title = tags['title'][:-1]
+                    title = title[:-1]
                     print("New title : " + title)
                     # Fix album
-                    album = tags['album'].split('"')[0]
+                    album = album.split('"')[0]
                     print("New album : " + album)
                     # Apply tags
                     Controller.fix_old_id3_tags(f, title, album)
