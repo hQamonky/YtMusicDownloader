@@ -181,7 +181,7 @@ class Controller:
         yt_playlist = youtube_dl.list_playlist(args.url)
         print(yt_playlist)
         Database.new_playlist(yt_playlist['id'], args.name, yt_playlist['uploader'])
-        mopidy = Mopidy(Controller.get_mopidy_playlists_path())
+        mopidy = Mopidy(Controller.get_mopidy_local_path, Controller.get_mopidy_playlists_path())
         mopidy.create_playlist(args.name)
         return {
             "id": yt_playlist['id'],
@@ -360,7 +360,7 @@ class Controller:
                 print('Music is new in this playlist')
                 Database.add_music_in_playlist(video['id'], playlist_id)
                 # Add Music in Mopidy playlist
-                mopidy = Mopidy(Controller.get_mopidy_playlists_path())
+                mopidy = Mopidy(Controller.get_mopidy_local_path, Controller.get_mopidy_playlists_path())
                 music = Database.get_music(video['id'])
                 mopidy.add_music_to_playlist(music['name'], db_playlist['name'])
         return log
