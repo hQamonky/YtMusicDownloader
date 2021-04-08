@@ -151,7 +151,7 @@ class Controller:
     @staticmethod
     def factory_reset():
         config = {
-            "version": "2.0",
+            "version": "2.2",
             "youtube_dl_path": "./src/youtube_dl/youtube-dl",
             "download_path": "/home/pi/Music",
             "download_interval": "1",

@@ -1,7 +1,4 @@
-# Version 2.1
-- Handle real playlists:
-    - Dissociate id and youtube id + add custom playlist names
-    - Handle Mopidy playlists (create a "mopidy" folder)
+# Version 3.0
 - Handle syncthing conflicts
     - Create method that deletes syncthing conflict files 
     - run method after each download
@@ -11,7 +8,7 @@
         - Validate button to run "removal"
     - Create methods in Controller to move music files to the archive folder
     - Add "archive folder path" to configuration
-# Version 3.0
+# Version 4.0
 - Clean code (use object for database, etc)
 - Handle errors and display error messages
 - Create tests
