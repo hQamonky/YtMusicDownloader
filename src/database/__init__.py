@@ -333,7 +333,7 @@ class Playlists:
 
     @staticmethod
     def insert(cursor, youtube_id, name, uploader, folder):
-        cursor.execute("INSERT INTO Playlists VALUES (youtube_id, name, uploader, folder)",
+        cursor.execute("INSERT INTO Playlists  (youtube_id, name, uploader, folder) VALUES (?, ?, ?, ?)",
                        (youtube_id, name, uploader, folder))
 
     @staticmethod

@@ -120,7 +120,7 @@ class Controller:
             "version": "2.0",
             "download_interval": "1",
             "youtube_dl_path": "./src/youtube_dl/youtube-dl",
-            "mopidy_playlists_path": "~/.local/share/mopidy/m3u",
+            "mopidy_playlists_path": "/home/pi/.local/share/mopidy/m3u",
             "use_custom_user": "true",
             "naming_format": {
                 "separator": " - ",
