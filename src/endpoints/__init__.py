@@ -9,7 +9,7 @@ from src.controller import Controller
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from src.endpoints.playlists import Playlists, Playlist, DownloadPlaylists, DownloadPlaylist
-from src.endpoints.music import Music, NewMusic, FixOldMusicTags
+from src.endpoints.music import Music, NewMusic, FixOldMusicTags, CleanSyncConflicts
 from src.endpoints.naming_rules import NamingRules, NamingRule
 from src.endpoints.channels import Channels, Channel
 
@@ -120,6 +120,7 @@ api.add_resource(DownloadPlaylist, '/playlist/<playlist_id>/download')
 api.add_resource(NewMusic, '/music/new')
 api.add_resource(Music, '/music/<identifier>')
 api.add_resource(FixOldMusicTags, '/music/fix-old-tags')
+api.add_resource(CleanSyncConflicts, '/music/clean-sync-conflicts')
 # Naming Rules
 api.add_resource(NamingRules, '/naming-rules')
 api.add_resource(NamingRule, '/naming-rule/<identifier>')

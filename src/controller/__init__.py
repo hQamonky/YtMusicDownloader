@@ -365,6 +365,8 @@ class Controller:
                 mopidy = Mopidy(Controller.get_mopidy_local_path, Controller.get_mopidy_playlists_path())
                 music = Database.get_music(video['id'])
                 mopidy.add_music_to_playlist(music['name'], db_playlist['name'])
+        # Clean sync conflicts
+        Controller.clean_sync_conflicts("False")
         return log
 
     # Music ------------------------------------------------------------------------------------------------------------
@@ -425,6 +427,31 @@ class Controller:
                 else:
                     print("File is already ok.")
         return
+
+    @staticmethod
+    def clean_sync_conflicts(dry_run):
+        log = {
+            'Kept': [],
+            'Deleted': []
+        }
+        # Iterate on every music file
+        directory = Controller.get_download_path()
+        for filename in os.listdir(directory):
+            f = os.path.join(directory, filename)
+            # checking if it is a file
+            if os.path.isfile(f):
+                print("Treating file : " + f)
+                # Check if it's a conflict file
+                if ".sync-conflict-" in filename or filename.endswith('.webm') or filename.endswith('.webp'):
+                    # Delete file
+                    print("deleting file...")
+                    if dry_run == "False":
+                        os.remove(f)
+                    log['Deleted'].append(f)
+                else:
+                    print("Keep file.")
+                    log['Kept'].append(f)
+        return log
 
     # Naming Rules -----------------------------------------------------------------------------------------------------
 

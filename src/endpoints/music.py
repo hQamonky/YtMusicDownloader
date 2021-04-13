@@ -26,3 +26,9 @@ class FixOldMusicTags(Resource):
     @staticmethod
     def get():
         return {'message': 'Success', 'data': Controller.fix_old_music_tags()}, 200
+
+
+class CleanSyncConflicts(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.clean_sync_conflicts("False")}, 200
