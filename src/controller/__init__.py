@@ -407,25 +407,37 @@ class Controller:
             # checking if it is a file
             if os.path.isfile(f):
                 print("Treating file : " + f)
-                # Check tag values
-                tags = Controller.get_id3_tags(f)
-                title = tags['title'][0]
-                print("Initial title : ")
-                print(title)
-                album = tags['album'][0]
-                print("Initial album : " + album)
-                # if tag is incorrect
-                if title.endswith('"') and len(album) > 150:
-                    # Fix title
-                    title = title[:-1]
-                    print("New title : " + title)
-                    # Fix album
-                    album = album.split('"')[0]
-                    print("New album : " + album)
-                    # Apply tags
-                    Controller.fix_old_id3_tags(f, title, album)
+                # Check that its an mp3 file
+                if filename.endswith('.mp3'):
+                    # Check tag values
+                    tags = Controller.get_id3_tags(f)
+                    title = ''
+                    album = ''
+                    if 'title' in tags:
+                        title = tags['title'][0]
+                        print("Initial title : ")
+                        print(title)
+                    else:
+                        print('No title tag')
+                    if 'album' in tags:
+                        album = tags['album'][0]
+                        print("Initial album : " + album)
+                    else:
+                        print('No album tag')
+                    # if tag is incorrect
+                    if title.endswith('"') and len(album) > 150:
+                        # Fix title
+                        title = title[:-1]
+                        print("New title : " + title)
+                        # Fix album
+                        album = album.split('"')[0]
+                        print("New album : " + album)
+                        # Apply tags
+                        Controller.fix_old_id3_tags(f, title, album)
+                    else:
+                        print("File is already ok.")
                 else:
-                    print("File is already ok.")
+                    print('Not an mp3 file')
         return
 
     @staticmethod
