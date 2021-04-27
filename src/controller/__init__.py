@@ -331,12 +331,12 @@ class Controller:
                                           + video_title + ".webm")
                 # Set permissions to downloaded file
                 file = output_folder + '/' + video_title + '.mp3'
-                if use_custom_user == "true":
-                    subprocess.run(["chown", "qmk", file],
-                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
-                else:
-                    subprocess.run(["chmod", "644", file],
-                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                # if use_custom_user == "true":
+                #     subprocess.run(["chown", "qmk", file],
+                #                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                # else:
+                #     subprocess.run(["chmod", "644", file],
+                #                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 # Set metadata tags
                 # Controller.set_id3_tags(file, title, artist, album, year, comment)
                 Controller.set_id3_tags(file, title, artist, album, comment)
