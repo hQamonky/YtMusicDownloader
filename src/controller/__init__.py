@@ -438,8 +438,8 @@ class Controller:
                         if len(split_name) == 2:
                             artist = split_name[0]
                             title = split_name[1]
-                        print('Title : ' + title)
-                        print('Artist : ' + artist)
+                            print('Title : ' + title)
+                            print('Artist : ' + artist)
                         # Apply tags
                         Controller.update_id3_tags(f, title, artist)
                     # Fix album
