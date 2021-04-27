@@ -400,6 +400,8 @@ class Controller:
 
     @staticmethod
     def fix_old_music_tags():
+        # Get list of naming rules from database
+        naming_rules = Database.get_naming_rules()
         # Iterate on every music file
         directory = Controller.get_download_path()
         for filename in os.listdir(directory):
@@ -411,29 +413,41 @@ class Controller:
                 if filename.endswith('.mp3'):
                     # Check tag values
                     tags = Controller.get_id3_tags(f)
-                    title = ''
+                    artist = None
                     album = ''
-                    if 'title' in tags:
-                        title = tags['title'][0]
-                        print("Initial title : ")
-                        print(title)
+                    if 'artist' in tags:
+                        artist = tags['artist'][0]
+                        print("Artist : " + artist)
                     else:
-                        print('No title tag')
+                        print('No artist tag')
                     if 'album' in tags:
                         album = tags['album'][0]
                         print("Initial album : " + album)
                     else:
                         print('No album tag')
-                    # if tag is incorrect
-                    if title.endswith('"') and len(album) > 150:
-                        # Fix title
-                        title = title[:-1]
-                        print("New title : " + title)
-                        # Fix album
+                    # Fix Title and Artist
+                    if artist is None:
+                        title = None
+                        name = filename[:-4]
+                        # Apply naming rules
+                        print('Applying naming rules...')
+                        for naming_rule in naming_rules:
+                            name = name.replace(naming_rule['replace'], naming_rule['replace_by'])
+                        print('Finale name : ' + name)
+                        split_name = name.split(' - ')
+                        if len(split_name) == 2:
+                            artist = split_name[0]
+                            title = split_name[1]
+                        print('Title : ' + title)
+                        print('Artist : ' + artist)
+                        # Apply tags
+                        Controller.update_id3_tags(f, title, artist)
+                    # Fix album
+                    if len(album) > 200:
                         album = album.split('"')[0]
                         print("New album : " + album)
                         # Apply tags
-                        Controller.fix_old_id3_tags(f, title, album)
+                        Controller.fix_old_id3_tags(f, album)
                     else:
                         print("File is already ok.")
                 else:
@@ -581,15 +595,12 @@ class Controller:
             return
 
     @staticmethod
-    # def set_id3_tags(file, title, artist, album, year, comment):
     def fix_old_id3_tags(file, title, album):
         try:
             tag = EasyID3(file)
         except:
             tag = mutagen.File(file, easy=True)
             tag.add_tags()
-        if title:
-            tag['title'] = title
         if album:
             tag['album'] = album
         tag.save(v2_version=3)
