@@ -595,7 +595,7 @@ class Controller:
             return
 
     @staticmethod
-    def fix_old_id3_tags(file, title, album):
+    def fix_old_id3_tags(file, album):
         try:
             tag = EasyID3(file)
         except:
