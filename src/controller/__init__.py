@@ -320,12 +320,12 @@ class Controller:
                 output_folder = r'' + Controller.get_download_path()
                 os.makedirs(output_folder, exist_ok=True)
                 use_custom_user = Controller.get_use_custom_user()
-                if use_custom_user == "true":
-                    subprocess.run(["chown", "qmk", output_folder],
-                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
-                else:
-                    subprocess.run(["chmod", "755", output_folder],
-                                   check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                # if use_custom_user == "true":
+                #     subprocess.run(["chown", "qmk", output_folder],
+                #                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                # else:
+                #     subprocess.run(["chmod", "755", output_folder],
+                #                    check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 # Download video
                 youtube_dl.download_music(YoutubeDl.video_url() + video['id'], output_folder + '/'
                                           + video_title + ".webm")
