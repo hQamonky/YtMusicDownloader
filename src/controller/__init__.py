@@ -3,6 +3,7 @@ import mutagen
 from src.mopidy import Mopidy
 from src.youtube_dl import YoutubeDl
 from src.database import Database
+from src.poweramp import PowerAmp
 import json
 import os
 import subprocess
@@ -218,6 +219,7 @@ class Controller:
         logs = []
         for playlist in playlists:
             logs.append(Controller.download_playlist(playlist['id']))
+        Controller.convert_mopidy_playlists_to_power_amp()
         return logs
 
     # Don't be scared
@@ -368,6 +370,12 @@ class Controller:
         # Clean sync conflicts
         Controller.clean_sync_conflicts("False")
         return log
+
+    @staticmethod
+    def convert_mopidy_playlists_to_power_amp():
+        power_amp = PowerAmp(Controller.get_download_path())
+        power_amp.convert_playlists_from_mopidy(Controller.get_mopidy_playlists_path)
+        return 'OK'
 
     # Music ------------------------------------------------------------------------------------------------------------
 

@@ -1,6 +1,5 @@
 from os import path
 import pathlib
-from urllib.parse import unquote, urlparse
 
 
 class Mopidy:
@@ -40,7 +39,3 @@ class Mopidy:
     @staticmethod
     def convert_path_to_uri(file_path):
         return pathlib.Path(file_path).as_uri()
-
-    @staticmethod
-    def convert_uri_to_path(uri):
-        return unquote(urlparse(uri).path)

@@ -8,7 +8,7 @@ from flask_restful import Resource, Api, reqparse
 from src.controller import Controller
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from src.endpoints.playlists import Playlists, Playlist, DownloadPlaylists, DownloadPlaylist
+from src.endpoints.playlists import Playlists, Playlist, DownloadPlaylists, DownloadPlaylist, ConvertPlaylists
 from src.endpoints.music import Music, NewMusic, FixOldMusicTags, CleanSyncConflicts
 from src.endpoints.naming_rules import NamingRules, NamingRule
 from src.endpoints.channels import Channels, Channel
