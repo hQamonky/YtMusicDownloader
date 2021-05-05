@@ -21,6 +21,12 @@ class Playlists(Resource):
         return {'message': 'Playlist has been added', 'data': Controller.new_playlist(args)}, 201
 
 
+class ConvertPlaylists(Resource):
+    @staticmethod
+    def get():
+        return {'message': 'Success', 'data': Controller.convert_mopidy_playlists_to_power_amp()}, 200
+
+
 class DownloadPlaylists(Resource):
     @staticmethod
     def post():

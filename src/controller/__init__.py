@@ -104,6 +104,8 @@ class Controller:
     def get_mopidy_playlists_path():
         with open('./src/configuration.json') as json_file:
             config = json.load(json_file)
+            print(config['mopidy_playlists_path'])
+        print(config['mopidy_playlists_path'])
         return config['mopidy_playlists_path']
 
     @staticmethod
@@ -374,7 +376,7 @@ class Controller:
     @staticmethod
     def convert_mopidy_playlists_to_power_amp():
         power_amp = PowerAmp(Controller.get_download_path())
-        power_amp.convert_playlists_from_mopidy(Controller.get_mopidy_playlists_path)
+        power_amp.convert_playlists_from_mopidy(Controller.get_mopidy_playlists_path())
         return 'OK'
 
     # Music ------------------------------------------------------------------------------------------------------------
