@@ -1,5 +1,8 @@
 from os import path
+import os
 import pathlib
+
+from src.poweramp import PowerAmp
 
 
 class Mopidy:
@@ -33,7 +36,52 @@ class Mopidy:
             playlist_file.write("\n" + mopidy_uri)
         return
 
-    def archive_music(self, music):
+    def get_music_to_remove(self, remove_playlist_name):
+        music_to_remove = []
+        # Iterate on "remove playlist"
+        f = open(self.playlists_path + "/" + remove_playlist_name + ".m3u8", 'r')
+        for line in f:
+            print("Converting line : " + line)
+            if line.startswith("local:track:Archive%"):
+                # Sip if music is already archived
+                continue
+            music_to_remove.append(PowerAmp.convert_uri_to_path(line.replace("local:track:", '')))
+        return music_to_remove
+
+    def archive_music(self, music, remove_playlist_name):
+        # Iterate on playlist files
+        for filename in os.listdir(self.playlists_path):
+            f = os.path.join(self.playlists_path, filename)
+            # Checking if it is a file
+            if os.path.isfile(f):
+                print("Remove playlist name = " + remove_playlist_name)
+                if not f.endswith(remove_playlist_name + ".m3u8"):
+                    print("Treating file : " + f)
+                    # Check if it's a playlist file
+                    if filename.endswith('.m3u8'):
+                        # Remove music from playlist
+                        self.remove_music_from_playlist(music, f)
+                    else:
+                        print("File is not a playlist!")
+                else:
+                    print("Ignoring remove playlist")
+            else:
+                print("Not a file.")
+        return
+
+    @staticmethod
+    def remove_music_from_playlist(music, playlist):
+        print("music : " + music)
+        formatted_music = Mopidy.convert_path_to_uri("/" + music).replace("file:///", "local:track:") + "\n"
+        print("formatted music : " + formatted_music)
+        print("file to open : " + playlist)
+        with open(playlist, "r+") as f:
+            d = f.readlines()
+            f.seek(0)
+            for i in d:
+                if i != formatted_music:
+                    f.write(i)
+            f.truncate()
         return
 
     @staticmethod

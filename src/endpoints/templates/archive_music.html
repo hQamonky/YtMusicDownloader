@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Archive Music</title>
+<h2>Archive Music</h2>
+<p>
+    Are you sure that you want to archive your music from your "{{playlist_name}}" playlist?
+</p>
+<p>
+    This will move music from the playlist to an "Archive" folder and remove them from other playlists.
+</p>
+
+<p>
+    {% for item in music_to_remove %}
+        {{item}}<br/>
+    {% endfor %}
+</p>
+<form method=post>
+    <p><a href="{{ url_for('.ui_home') }}">Cancel</a> <input type=submit value=Continue>
+</form>
+</html>

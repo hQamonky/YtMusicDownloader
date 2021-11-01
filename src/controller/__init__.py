@@ -109,6 +109,26 @@ class Controller:
         return config['mopidy_playlists_path']
 
     @staticmethod
+    def set_remove_playlist_name(path):
+        if path[-1:] == '/':
+            path = path[:-1]
+        # Get configuration file
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+        config['remove_playlist_name'] = path
+        with open('./src/configuration.json', 'w') as outfile:
+            json.dump(config, outfile)
+        return config
+
+    @staticmethod
+    def get_remove_playlist_name():
+        with open('./src/configuration.json') as json_file:
+            config = json.load(json_file)
+            print(config['remove_playlist_name'])
+        print(config['remove_playlist_name'])
+        return config['remove_playlist_name']
+
+    @staticmethod
     def update_config_naming_format(args):
         # Get configuration file
         with open('./src/configuration.json') as json_file:
@@ -488,6 +508,47 @@ class Controller:
                     print("Keep file.")
                     log['Kept'].append(f)
         return log
+
+    @staticmethod
+    def archive_music():
+        # Created variables
+        music_folder = Controller.get_download_path()
+        archive_folder = music_folder + "/Archive"
+        mopidy_playlists_path = Controller.get_mopidy_playlists_path()
+        remove_playlist_name = Controller.get_remove_playlist_name()
+        remove_playlist_path = mopidy_playlists_path + "/" + remove_playlist_name + ".m3u8"
+        mopidy = Mopidy(Controller.get_mopidy_local_path(), mopidy_playlists_path)
+        power_amp = PowerAmp(music_folder)
+        # Get list of music to remove
+        music_to_remove = mopidy.get_music_to_remove(remove_playlist_name)
+
+        # Create Archive folder if doesn't exist
+        if not os.path.exists(archive_folder):
+            os.makedirs(archive_folder)
+
+        # Remove music from mopidy playlist files
+        for music_file in music_to_remove:
+            # Remove next line character
+            music_file = music_file[:-1]
+            mopidy.archive_music(music_file, remove_playlist_name)
+            # Move music file to archive folder
+            try:
+                os.rename(
+                    music_folder + "/" + music_file,
+                    archive_folder + "/" + music_file
+                )
+            except:
+                print("Unknown error")
+            # Update mopidy "remove playlist" file
+            mopidy.remove_music_from_playlist(music_file, remove_playlist_path)
+        # Update all power amp playlist files
+        power_amp.convert_playlists_from_mopidy(mopidy_playlists_path)
+        return 'OK'
+
+    @staticmethod
+    def get_music_to_remove():
+        mopidy = Mopidy(Controller.get_mopidy_local_path(), Controller.get_mopidy_playlists_path())
+        return mopidy.get_music_to_remove(Controller.get_remove_playlist_name())
 
     # Naming Rules -----------------------------------------------------------------------------------------------------
 

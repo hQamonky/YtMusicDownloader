@@ -27,18 +27,18 @@ class PowerAmp:
         return
 
     def convert_playlist_from_mopidy(self, playlist):
-        print("Converting " + playlist + "...")
+        # print("Converting " + playlist + "...")
         tmp_playlist_filename = playlist.split('/')
-        print(tmp_playlist_filename)
+        # print(tmp_playlist_filename)
         playlist_filename = tmp_playlist_filename[len(tmp_playlist_filename) - 1]
         self.create_playlist(playlist_filename.replace(".m3u8", ''))
         f = open(playlist, 'r')
         music_folder = self.music_path.split('/')[len(self.music_path.split('/')) - 1]
         for line in f:
-            print("Converting line : " + line)
+            # print("Converting line : " + line)
             new_playlist = open(self.playlists_path + "/" + playlist_filename, 'a')
             new_line = PowerAmp.convert_uri_to_path(line.replace("local:track:", "file:///"))
-            print("new_line = " + new_line)
+            # print("new_line = " + new_line)
             new_playlist.write("#EXT-X-RATING:0\n"
                                "primary/" + music_folder + new_line.replace('', ''))
         return
