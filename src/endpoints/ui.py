@@ -176,6 +176,17 @@ class MusicForm(Form):
     new = SelectField('new', choices=bool_types)
 
 
+@app.route('/ui/music/archive', methods=['GET', 'POST'])
+def ui_archive_music():
+    if request.method == 'POST':
+        # Reset
+        Controller.archive_music()
+        return redirect('/ui/home')
+    return render_template('archive_music.html',
+                           music_to_remove=Controller.get_music_to_remove(),
+                           playlist_name=Controller.get_remove_playlist_name())
+
+
 # Naming Rules ---------------------------------------------------------------------------------------------------------
 
 
@@ -359,6 +370,7 @@ def ui_configuration():
                              download_interval=configuration['download_interval'],
                              mopidy_local_path=configuration['mopidy_local_path'],
                              mopidy_playlists_path=configuration['mopidy_playlists_path'],
+                             remove_playlist_name=configuration['remove_playlist_name'],
                              use_custom_user=configuration['use_custom_user'],
                              separator=configuration['naming_format']['separator'],
                              artist_before_title=configuration['naming_format']['artist_before_title'])
@@ -372,6 +384,7 @@ def ui_configuration():
                 download_interval = form.download_interval.data
                 mopidy_local_path = form.mopidy_local_path.data
                 mopidy_playlists_path = form.mopidy_playlists_path.data
+                remove_playlist_name = form.remove_playlist_name.data
                 use_custom_user = form.use_custom_user.data
                 separator = form.separator.data
                 artist_before_title = form.artist_before_title.data
@@ -381,6 +394,7 @@ def ui_configuration():
             Controller.set_download_interval(args.download_interval)
             Controller.set_mopidy_local_path(args.mopidy_local_path)
             Controller.set_mopidy_playlists_path(args.mopidy_playlists_path)
+            Controller.set_remove_playlist_name(args.remove_playlist_name)
             Controller.update_config_user(args.use_custom_user)
             Controller.update_config_naming_format(args)
             return redirect('/ui/home')
@@ -394,6 +408,7 @@ class ConfigurationForm(Form):
     download_interval = StringField('download_interval')
     mopidy_local_path = StringField('mopidy_local_path')
     mopidy_playlists_path = StringField('mopidy_playlists_path')
+    remove_playlist_name = StringField('remove_playlist_name')
     use_custom_user = SelectField('use_custom_user', choices=bool_types)
     separator = StringField('separator')
     artist_before_title = SelectField('artist_before_title', choices=bool_types)
