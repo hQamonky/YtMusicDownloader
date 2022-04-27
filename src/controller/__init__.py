@@ -174,12 +174,13 @@ class Controller:
     @staticmethod
     def factory_reset():
         config = {
-            "version": "2.3",
-            "youtube_dl_path": "./src/youtube_dl/youtube-dl",
-            "download_path": "/mnt/seagate6t/n_u/Music",
+            "version": "3.0",
+            "youtube_dl_path": "./src/youtube_dl/youtube-dl"
+            , "download_path": "/mnt/seagate14/n_u/Music",
             "download_interval": "1",
-            "mopidy_local_path": "/mnt/seagate6t/n_u/Music",
+            "mopidy_local_path": "/mnt/seagate14/n_u/Music",
             "mopidy_playlists_path": "/home/pi/.local/share/mopidy/m3u",
+            "remove_playlist_name": "Remove",
             "use_custom_user": "false",
             "naming_format": {
                 "separator": " - ",
